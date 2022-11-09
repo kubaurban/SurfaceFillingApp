@@ -5,7 +5,7 @@ namespace Services
 {
     public class ShapeManager : IShapeManager
     {
-        HashSet<Face> _faces;
+        private readonly HashSet<Face> _faces;
 
         public ShapeManager()
         {
@@ -18,5 +18,7 @@ namespace Services
         }
 
         public IEnumerable<Face> GetAllFaces() => _faces.AsEnumerable();
+
+        public IEnumerable<Edge> GetDistinctEdges() => _faces.SelectMany(x => x.Edges).ToHashSet(new EdgeComparator());
     }
 }

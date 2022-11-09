@@ -4,7 +4,7 @@ namespace Models
 {
     public class EdgeComparator : IEqualityComparer<Edge>
     {
-        public bool Equals(Edge? x, Edge? y)
+        public bool Equals(Edge x, Edge y)
         {
             if (x == null || y == null) return false;
 

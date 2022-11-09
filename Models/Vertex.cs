@@ -10,6 +10,12 @@ namespace Models
         public float Z { get; set; }
         public Vector3 NormalVector { get; set; }
 
+        public Vertex(float x, float y) : this()
+        {
+            X = x;
+            Y = y;
+        }
+
         public Vertex(float x, float y, float z, Vector3 normalVector)
         {
             X = x;
@@ -18,7 +24,7 @@ namespace Models
             NormalVector = normalVector;
         }
 
-        public override bool Equals(object? other)
+        public override bool Equals(object other)
         {
             if (other == null) return false;
 

@@ -6,6 +6,8 @@ namespace Services.Abstract
     {
         IEnumerable<Face> GetAllFaces();
 
+        IEnumerable<Edge> GetDistinctEdges();
+
         void AddFace(Face face);
     }
 }
