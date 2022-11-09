@@ -1,4 +1,5 @@
-﻿using SurfaceFillingApp.Abstract;
+﻿using Services.Abstract;
+using SurfaceFillingApp.Abstract;
 using System.Windows.Forms;
 using Views.Abstract;
 
@@ -7,10 +8,12 @@ namespace SurfaceFillingApp
     internal class Canvas : ICanvas
     {
         private IVisualizer _visualizer;
+        private IShapeManager _shapeManager;
 
-        public Canvas(IVisualizer visualizer)
+        public Canvas(IVisualizer visualizer, IShapeManager manager)
         {
             _visualizer = visualizer;
+            _shapeManager = manager;
         }
 
         public Form GetForm() => _visualizer.Form;
