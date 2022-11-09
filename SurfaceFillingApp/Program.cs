@@ -1,13 +1,17 @@
 using Microsoft.Practices.Unity;
+using Services;
+using Services.Abstract;
 using SurfaceFillingApp.Abstract;
 using System.Windows.Forms;
-using View;
+using Views;
 using Views.Abstract;
 
 namespace SurfaceFillingApp
 {
     internal static class Program
     {
+        private const string _pathToObj = "../../../../sphere.obj";
+
         /// <summary>
         ///  The main entry point for the application.
         /// </summary>
@@ -19,10 +23,15 @@ namespace SurfaceFillingApp
             ApplicationConfiguration.Initialize();
 
             var container = new UnityContainer();
-            container.RegisterType<ICanvas, Canvas>();
-            container.RegisterType<IVisualizer, Visualizer>();
+            container.RegisterType<IShapeManager, ShapeManager>(new ContainerControlledLifetimeManager());
+            container.RegisterType<IShapeParser, ShapeParser>(new ContainerControlledLifetimeManager());
+            container.RegisterType<ICanvas, Canvas>(new ContainerControlledLifetimeManager());
+            container.RegisterType<IVisualizer, Visualizer>(new ContainerControlledLifetimeManager());
 
-            var canvas = container.Resolve<Canvas>();
+            var parser = container.Resolve<IShapeParser>();
+            parser.LoadObj(_pathToObj);
+
+            var canvas = container.Resolve<ICanvas>();
             Application.Run(canvas.GetForm());
         }
     }

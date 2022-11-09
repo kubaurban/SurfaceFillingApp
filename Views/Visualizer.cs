@@ -1,6 +1,6 @@
 ﻿using Views.Abstract;
 
-namespace View
+namespace Views
 {
     public partial class Visualizer : Form, IVisualizer
     {
