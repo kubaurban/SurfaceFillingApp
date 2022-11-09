@@ -28,19 +28,35 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.PictureBox = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.PictureBox)).BeginInit();
             this.SuspendLayout();
+            // 
+            // PictureBox
+            // 
+            this.PictureBox.Location = new System.Drawing.Point(12, 28);
+            this.PictureBox.Name = "PictureBox";
+            this.PictureBox.Size = new System.Drawing.Size(500, 500);
+            this.PictureBox.TabIndex = 0;
+            this.PictureBox.TabStop = false;
             // 
             // Visualizer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(784, 561);
+            this.Controls.Add(this.PictureBox);
+            this.MaximumSize = new System.Drawing.Size(800, 600);
+            this.MinimumSize = new System.Drawing.Size(800, 600);
             this.Name = "Visualizer";
             this.Text = "Visualizer";
+            ((System.ComponentModel.ISupportInitialize)(this.PictureBox)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
+
+        private PictureBox PictureBox;
     }
 }

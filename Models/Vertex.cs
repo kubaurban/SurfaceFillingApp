@@ -1,12 +1,13 @@
-﻿using System.Numerics;
+﻿using System.Drawing;
+using System.Numerics;
 
 namespace Models
 {
     public struct Vertex
     {
-        public double X { get; set; }
-        public double Y { get; set; }
-        public double Z { get; set; }
+        public float X { get; set; }
+        public float Y { get; set; }
+        public float Z { get; set; }
         public Vector3 NormalVector { get; set; }
 
         public Vertex(float x, float y, float z, Vector3 normalVector)
@@ -31,5 +32,7 @@ namespace Models
         {
             return X.GetHashCode() ^ Y.GetHashCode() ^ Z.GetHashCode();
         }
+
+        public static implicit operator PointF(Vertex vertex) => new(vertex.X, vertex.Y);
     }
 }
