@@ -29,7 +29,41 @@
         private void InitializeComponent()
         {
             this.PictureBox = new System.Windows.Forms.PictureBox();
+            this.IlluminationBox = new System.Windows.Forms.GroupBox();
+            this.m_label = new System.Windows.Forms.Label();
+            this.ks_label = new System.Windows.Forms.Label();
+            this.kd_label = new System.Windows.Forms.Label();
+            this.mTrackBar = new System.Windows.Forms.TrackBar();
+            this.ksTrackBar = new System.Windows.Forms.TrackBar();
+            this.kdTrackBar = new System.Windows.Forms.TrackBar();
+            this.FillingBox = new System.Windows.Forms.GroupBox();
+            this.TextureRadioButton = new System.Windows.Forms.RadioButton();
+            this.SolidColorButton = new System.Windows.Forms.RadioButton();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.ChangeColorButton = new System.Windows.Forms.Button();
+            this.ChangeTextureButton = new System.Windows.Forms.Button();
+            this.AnimationBox = new System.Windows.Forms.GroupBox();
+            this.AnimationButton = new System.Windows.Forms.Button();
+            this.AnimationTrackBar = new System.Windows.Forms.TrackBar();
+            this.NormalMap = new System.Windows.Forms.GroupBox();
+            this.NormalMapCheckBox = new System.Windows.Forms.CheckBox();
+            this.InterpolationBox = new System.Windows.Forms.GroupBox();
+            this.FromDirectPointButton = new System.Windows.Forms.RadioButton();
+            this.FromVerticesButton = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBox)).BeginInit();
+            this.IlluminationBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.mTrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ksTrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.kdTrackBar)).BeginInit();
+            this.FillingBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
+            this.AnimationBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.AnimationTrackBar)).BeginInit();
+            this.NormalMap.SuspendLayout();
+            this.InterpolationBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // PictureBox
@@ -40,17 +74,253 @@
             this.PictureBox.TabIndex = 0;
             this.PictureBox.TabStop = false;
             // 
+            // IlluminationBox
+            // 
+            this.IlluminationBox.Controls.Add(this.m_label);
+            this.IlluminationBox.Controls.Add(this.ks_label);
+            this.IlluminationBox.Controls.Add(this.kd_label);
+            this.IlluminationBox.Controls.Add(this.mTrackBar);
+            this.IlluminationBox.Controls.Add(this.ksTrackBar);
+            this.IlluminationBox.Controls.Add(this.kdTrackBar);
+            this.IlluminationBox.Location = new System.Drawing.Point(518, 28);
+            this.IlluminationBox.Name = "IlluminationBox";
+            this.IlluminationBox.Size = new System.Drawing.Size(254, 181);
+            this.IlluminationBox.TabIndex = 1;
+            this.IlluminationBox.TabStop = false;
+            this.IlluminationBox.Text = "Illumination";
+            // 
+            // m_label
+            // 
+            this.m_label.AutoSize = true;
+            this.m_label.Location = new System.Drawing.Point(118, 154);
+            this.m_label.Name = "m_label";
+            this.m_label.Size = new System.Drawing.Size(18, 15);
+            this.m_label.TabIndex = 4;
+            this.m_label.Text = "m";
+            // 
+            // ks_label
+            // 
+            this.ks_label.AutoSize = true;
+            this.ks_label.Location = new System.Drawing.Point(118, 103);
+            this.ks_label.Name = "ks_label";
+            this.ks_label.Size = new System.Drawing.Size(18, 15);
+            this.ks_label.TabIndex = 3;
+            this.ks_label.Text = "ks";
+            // 
+            // kd_label
+            // 
+            this.kd_label.AutoSize = true;
+            this.kd_label.Location = new System.Drawing.Point(118, 53);
+            this.kd_label.Name = "kd_label";
+            this.kd_label.Size = new System.Drawing.Size(20, 15);
+            this.kd_label.TabIndex = 0;
+            this.kd_label.Text = "kd";
+            // 
+            // mTrackBar
+            // 
+            this.mTrackBar.Location = new System.Drawing.Point(6, 124);
+            this.mTrackBar.Name = "mTrackBar";
+            this.mTrackBar.Size = new System.Drawing.Size(242, 45);
+            this.mTrackBar.TabIndex = 2;
+            // 
+            // ksTrackBar
+            // 
+            this.ksTrackBar.Location = new System.Drawing.Point(6, 73);
+            this.ksTrackBar.Name = "ksTrackBar";
+            this.ksTrackBar.Size = new System.Drawing.Size(242, 45);
+            this.ksTrackBar.TabIndex = 1;
+            // 
+            // kdTrackBar
+            // 
+            this.kdTrackBar.Location = new System.Drawing.Point(6, 22);
+            this.kdTrackBar.Name = "kdTrackBar";
+            this.kdTrackBar.Size = new System.Drawing.Size(242, 45);
+            this.kdTrackBar.TabIndex = 0;
+            // 
+            // FillingBox
+            // 
+            this.FillingBox.Controls.Add(this.TextureRadioButton);
+            this.FillingBox.Controls.Add(this.SolidColorButton);
+            this.FillingBox.Controls.Add(this.splitContainer1);
+            this.FillingBox.Location = new System.Drawing.Point(518, 288);
+            this.FillingBox.Name = "FillingBox";
+            this.FillingBox.Size = new System.Drawing.Size(254, 85);
+            this.FillingBox.TabIndex = 2;
+            this.FillingBox.TabStop = false;
+            this.FillingBox.Text = "Filling";
+            // 
+            // TextureRadioButton
+            // 
+            this.TextureRadioButton.AutoSize = true;
+            this.TextureRadioButton.Location = new System.Drawing.Point(159, 21);
+            this.TextureRadioButton.Name = "TextureRadioButton";
+            this.TextureRadioButton.Size = new System.Drawing.Size(63, 19);
+            this.TextureRadioButton.TabIndex = 1;
+            this.TextureRadioButton.TabStop = true;
+            this.TextureRadioButton.Text = "Texture";
+            this.TextureRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // SolidColorButton
+            // 
+            this.SolidColorButton.AutoSize = true;
+            this.SolidColorButton.Location = new System.Drawing.Point(26, 21);
+            this.SolidColorButton.Name = "SolidColorButton";
+            this.SolidColorButton.Size = new System.Drawing.Size(81, 19);
+            this.SolidColorButton.TabIndex = 0;
+            this.SolidColorButton.TabStop = true;
+            this.SolidColorButton.Text = "Solid color";
+            this.SolidColorButton.UseVisualStyleBackColor = true;
+            // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Location = new System.Drawing.Point(3, 37);
+            this.splitContainer1.Name = "splitContainer1";
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.ChangeColorButton);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.ChangeTextureButton);
+            this.splitContainer1.Size = new System.Drawing.Size(248, 46);
+            this.splitContainer1.SplitterDistance = 125;
+            this.splitContainer1.TabIndex = 2;
+            // 
+            // ChangeColorButton
+            // 
+            this.ChangeColorButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.ChangeColorButton.Location = new System.Drawing.Point(5, 8);
+            this.ChangeColorButton.Name = "ChangeColorButton";
+            this.ChangeColorButton.Size = new System.Drawing.Size(117, 31);
+            this.ChangeColorButton.TabIndex = 1;
+            this.ChangeColorButton.Text = "Change color";
+            this.ChangeColorButton.UseVisualStyleBackColor = true;
+            // 
+            // ChangeTextureButton
+            // 
+            this.ChangeTextureButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.ChangeTextureButton.Location = new System.Drawing.Point(3, 8);
+            this.ChangeTextureButton.Name = "ChangeTextureButton";
+            this.ChangeTextureButton.Size = new System.Drawing.Size(113, 31);
+            this.ChangeTextureButton.TabIndex = 2;
+            this.ChangeTextureButton.Text = "Change texture";
+            this.ChangeTextureButton.UseVisualStyleBackColor = true;
+            // 
+            // AnimationBox
+            // 
+            this.AnimationBox.Controls.Add(this.AnimationButton);
+            this.AnimationBox.Controls.Add(this.AnimationTrackBar);
+            this.AnimationBox.Location = new System.Drawing.Point(518, 215);
+            this.AnimationBox.Name = "AnimationBox";
+            this.AnimationBox.Size = new System.Drawing.Size(254, 67);
+            this.AnimationBox.TabIndex = 3;
+            this.AnimationBox.TabStop = false;
+            this.AnimationBox.Text = "Animation";
+            // 
+            // AnimationButton
+            // 
+            this.AnimationButton.Location = new System.Drawing.Point(8, 26);
+            this.AnimationButton.Name = "AnimationButton";
+            this.AnimationButton.Size = new System.Drawing.Size(75, 23);
+            this.AnimationButton.TabIndex = 0;
+            this.AnimationButton.Text = "Enable";
+            this.AnimationButton.UseVisualStyleBackColor = true;
+            // 
+            // AnimationTrackBar
+            // 
+            this.AnimationTrackBar.Location = new System.Drawing.Point(89, 16);
+            this.AnimationTrackBar.Name = "AnimationTrackBar";
+            this.AnimationTrackBar.Size = new System.Drawing.Size(159, 45);
+            this.AnimationTrackBar.TabIndex = 3;
+            // 
+            // NormalMap
+            // 
+            this.NormalMap.Controls.Add(this.NormalMapCheckBox);
+            this.NormalMap.Location = new System.Drawing.Point(518, 442);
+            this.NormalMap.Name = "NormalMap";
+            this.NormalMap.Size = new System.Drawing.Size(254, 86);
+            this.NormalMap.TabIndex = 4;
+            this.NormalMap.TabStop = false;
+            this.NormalMap.Text = "NormalMap";
+            // 
+            // NormalMapCheckBox
+            // 
+            this.NormalMapCheckBox.AutoSize = true;
+            this.NormalMapCheckBox.Location = new System.Drawing.Point(52, 22);
+            this.NormalMapCheckBox.Name = "NormalMapCheckBox";
+            this.NormalMapCheckBox.Size = new System.Drawing.Size(157, 19);
+            this.NormalMapCheckBox.TabIndex = 0;
+            this.NormalMapCheckBox.Text = "Modify with NormalMap";
+            this.NormalMapCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // InterpolationBox
+            // 
+            this.InterpolationBox.Controls.Add(this.FromDirectPointButton);
+            this.InterpolationBox.Controls.Add(this.FromVerticesButton);
+            this.InterpolationBox.Location = new System.Drawing.Point(518, 377);
+            this.InterpolationBox.Name = "InterpolationBox";
+            this.InterpolationBox.Size = new System.Drawing.Size(254, 59);
+            this.InterpolationBox.TabIndex = 5;
+            this.InterpolationBox.TabStop = false;
+            this.InterpolationBox.Text = "Interpolation";
+            // 
+            // FromDirectPointButton
+            // 
+            this.FromDirectPointButton.AutoSize = true;
+            this.FromDirectPointButton.Location = new System.Drawing.Point(131, 23);
+            this.FromDirectPointButton.Name = "FromDirectPointButton";
+            this.FromDirectPointButton.Size = new System.Drawing.Size(117, 19);
+            this.FromDirectPointButton.TabIndex = 1;
+            this.FromDirectPointButton.TabStop = true;
+            this.FromDirectPointButton.Text = "From direct point";
+            this.FromDirectPointButton.UseVisualStyleBackColor = true;
+            // 
+            // FromVerticesButton
+            // 
+            this.FromVerticesButton.AutoSize = true;
+            this.FromVerticesButton.Location = new System.Drawing.Point(20, 23);
+            this.FromVerticesButton.Name = "FromVerticesButton";
+            this.FromVerticesButton.Size = new System.Drawing.Size(96, 19);
+            this.FromVerticesButton.TabIndex = 0;
+            this.FromVerticesButton.TabStop = true;
+            this.FromVerticesButton.Text = "From vertices";
+            this.FromVerticesButton.UseVisualStyleBackColor = true;
+            // 
             // Visualizer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(784, 561);
+            this.Controls.Add(this.InterpolationBox);
+            this.Controls.Add(this.NormalMap);
+            this.Controls.Add(this.FillingBox);
+            this.Controls.Add(this.AnimationBox);
+            this.Controls.Add(this.IlluminationBox);
             this.Controls.Add(this.PictureBox);
             this.MaximumSize = new System.Drawing.Size(800, 600);
             this.MinimumSize = new System.Drawing.Size(800, 600);
             this.Name = "Visualizer";
-            this.Text = "Visualizer";
+            this.Text = "Surface Filler";
             ((System.ComponentModel.ISupportInitialize)(this.PictureBox)).EndInit();
+            this.IlluminationBox.ResumeLayout(false);
+            this.IlluminationBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.mTrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ksTrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.kdTrackBar)).EndInit();
+            this.FillingBox.ResumeLayout(false);
+            this.FillingBox.PerformLayout();
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+            this.splitContainer1.ResumeLayout(false);
+            this.AnimationBox.ResumeLayout(false);
+            this.AnimationBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.AnimationTrackBar)).EndInit();
+            this.NormalMap.ResumeLayout(false);
+            this.NormalMap.PerformLayout();
+            this.InterpolationBox.ResumeLayout(false);
+            this.InterpolationBox.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -58,5 +328,26 @@
         #endregion
 
         private PictureBox PictureBox;
+        private GroupBox IlluminationBox;
+        private GroupBox FillingBox;
+        private GroupBox AnimationBox;
+        private GroupBox NormalMap;
+        private TrackBar kdTrackBar;
+        private TrackBar mTrackBar;
+        private TrackBar ksTrackBar;
+        private Label kd_label;
+        private Label ks_label;
+        private Label m_label;
+        private Button AnimationButton;
+        private TrackBar AnimationTrackBar;
+        private RadioButton TextureRadioButton;
+        private RadioButton SolidColorButton;
+        private SplitContainer splitContainer1;
+        private Button ChangeColorButton;
+        private Button ChangeTextureButton;
+        private CheckBox NormalMapCheckBox;
+        private GroupBox InterpolationBox;
+        private RadioButton FromDirectPointButton;
+        private RadioButton FromVerticesButton;
     }
 }

@@ -6,13 +6,12 @@ namespace Services
 {
     public class ShapeParser : IShapeParser
     {
-        private IShapeManager _shapeManager;
+        private readonly IShapeManager _shapeManager;
 
         public ShapeParser(IShapeManager shapeManager)
         {
             _shapeManager = shapeManager;
         }
-
 
         /// <summary>
         /// Using loader from https://github.com/chrisjansson/ObjLoader
