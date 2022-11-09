@@ -30,6 +30,7 @@
         {
             this.PictureBox = new System.Windows.Forms.PictureBox();
             this.IlluminationBox = new System.Windows.Forms.GroupBox();
+            this.ChangeIlluminationColorButton = new System.Windows.Forms.Button();
             this.m_label = new System.Windows.Forms.Label();
             this.ks_label = new System.Windows.Forms.Label();
             this.kd_label = new System.Windows.Forms.Label();
@@ -44,12 +45,13 @@
             this.ChangeTextureButton = new System.Windows.Forms.Button();
             this.AnimationBox = new System.Windows.Forms.GroupBox();
             this.AnimationButton = new System.Windows.Forms.Button();
-            this.AnimationTrackBar = new System.Windows.Forms.TrackBar();
+            this.zTrackBar = new System.Windows.Forms.TrackBar();
             this.NormalMap = new System.Windows.Forms.GroupBox();
             this.NormalMapCheckBox = new System.Windows.Forms.CheckBox();
             this.InterpolationBox = new System.Windows.Forms.GroupBox();
             this.FromDirectPointButton = new System.Windows.Forms.RadioButton();
             this.FromVerticesButton = new System.Windows.Forms.RadioButton();
+            this.z_label = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBox)).BeginInit();
             this.IlluminationBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.mTrackBar)).BeginInit();
@@ -61,7 +63,7 @@
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.AnimationBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.AnimationTrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.zTrackBar)).BeginInit();
             this.NormalMap.SuspendLayout();
             this.InterpolationBox.SuspendLayout();
             this.SuspendLayout();
@@ -76,63 +78,80 @@
             // 
             // IlluminationBox
             // 
+            this.IlluminationBox.Controls.Add(this.ChangeIlluminationColorButton);
             this.IlluminationBox.Controls.Add(this.m_label);
             this.IlluminationBox.Controls.Add(this.ks_label);
             this.IlluminationBox.Controls.Add(this.kd_label);
             this.IlluminationBox.Controls.Add(this.mTrackBar);
             this.IlluminationBox.Controls.Add(this.ksTrackBar);
             this.IlluminationBox.Controls.Add(this.kdTrackBar);
-            this.IlluminationBox.Location = new System.Drawing.Point(518, 28);
+            this.IlluminationBox.Location = new System.Drawing.Point(518, 20);
             this.IlluminationBox.Name = "IlluminationBox";
-            this.IlluminationBox.Size = new System.Drawing.Size(254, 181);
+            this.IlluminationBox.Size = new System.Drawing.Size(254, 184);
             this.IlluminationBox.TabIndex = 1;
             this.IlluminationBox.TabStop = false;
             this.IlluminationBox.Text = "Illumination";
             // 
+            // ChangeIlluminationColorButton
+            // 
+            this.ChangeIlluminationColorButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.ChangeIlluminationColorButton.Location = new System.Drawing.Point(39, 150);
+            this.ChangeIlluminationColorButton.Name = "ChangeIlluminationColorButton";
+            this.ChangeIlluminationColorButton.Size = new System.Drawing.Size(176, 25);
+            this.ChangeIlluminationColorButton.TabIndex = 5;
+            this.ChangeIlluminationColorButton.Text = "Change illumiantion color";
+            this.ChangeIlluminationColorButton.UseVisualStyleBackColor = true;
+            // 
             // m_label
             // 
             this.m_label.AutoSize = true;
-            this.m_label.Location = new System.Drawing.Point(118, 154);
+            this.m_label.Location = new System.Drawing.Point(111, 129);
             this.m_label.Name = "m_label";
-            this.m_label.Size = new System.Drawing.Size(18, 15);
+            this.m_label.Size = new System.Drawing.Size(30, 15);
             this.m_label.TabIndex = 4;
-            this.m_label.Text = "m";
+            this.m_label.Text = "m: 0";
             // 
             // ks_label
             // 
             this.ks_label.AutoSize = true;
-            this.ks_label.Location = new System.Drawing.Point(118, 103);
+            this.ks_label.Location = new System.Drawing.Point(111, 89);
             this.ks_label.Name = "ks_label";
-            this.ks_label.Size = new System.Drawing.Size(18, 15);
+            this.ks_label.Size = new System.Drawing.Size(30, 15);
             this.ks_label.TabIndex = 3;
-            this.ks_label.Text = "ks";
+            this.ks_label.Text = "ks: 0";
             // 
             // kd_label
             // 
             this.kd_label.AutoSize = true;
-            this.kd_label.Location = new System.Drawing.Point(118, 53);
+            this.kd_label.Location = new System.Drawing.Point(110, 45);
             this.kd_label.Name = "kd_label";
-            this.kd_label.Size = new System.Drawing.Size(20, 15);
+            this.kd_label.Size = new System.Drawing.Size(32, 15);
             this.kd_label.TabIndex = 0;
-            this.kd_label.Text = "kd";
+            this.kd_label.Text = "kd: 0";
             // 
             // mTrackBar
             // 
-            this.mTrackBar.Location = new System.Drawing.Point(6, 124);
+            this.mTrackBar.LargeChange = 4;
+            this.mTrackBar.Location = new System.Drawing.Point(6, 102);
+            this.mTrackBar.Maximum = 20;
             this.mTrackBar.Name = "mTrackBar";
             this.mTrackBar.Size = new System.Drawing.Size(242, 45);
             this.mTrackBar.TabIndex = 2;
             // 
             // ksTrackBar
             // 
-            this.ksTrackBar.Location = new System.Drawing.Point(6, 73);
+            this.ksTrackBar.LargeChange = 4;
+            this.ksTrackBar.Location = new System.Drawing.Point(6, 59);
+            this.ksTrackBar.Maximum = 20;
             this.ksTrackBar.Name = "ksTrackBar";
             this.ksTrackBar.Size = new System.Drawing.Size(242, 45);
             this.ksTrackBar.TabIndex = 1;
             // 
             // kdTrackBar
             // 
-            this.kdTrackBar.Location = new System.Drawing.Point(6, 22);
+            this.kdTrackBar.LargeChange = 4;
+            this.kdTrackBar.Location = new System.Drawing.Point(6, 17);
+            this.kdTrackBar.Maximum = 20;
             this.kdTrackBar.Name = "kdTrackBar";
             this.kdTrackBar.Size = new System.Drawing.Size(242, 45);
             this.kdTrackBar.TabIndex = 0;
@@ -142,7 +161,7 @@
             this.FillingBox.Controls.Add(this.TextureRadioButton);
             this.FillingBox.Controls.Add(this.SolidColorButton);
             this.FillingBox.Controls.Add(this.splitContainer1);
-            this.FillingBox.Location = new System.Drawing.Point(518, 288);
+            this.FillingBox.Location = new System.Drawing.Point(518, 283);
             this.FillingBox.Name = "FillingBox";
             this.FillingBox.Size = new System.Drawing.Size(254, 85);
             this.FillingBox.TabIndex = 2;
@@ -209,9 +228,10 @@
             // 
             // AnimationBox
             // 
+            this.AnimationBox.Controls.Add(this.z_label);
             this.AnimationBox.Controls.Add(this.AnimationButton);
-            this.AnimationBox.Controls.Add(this.AnimationTrackBar);
-            this.AnimationBox.Location = new System.Drawing.Point(518, 215);
+            this.AnimationBox.Controls.Add(this.zTrackBar);
+            this.AnimationBox.Location = new System.Drawing.Point(518, 210);
             this.AnimationBox.Name = "AnimationBox";
             this.AnimationBox.Size = new System.Drawing.Size(254, 67);
             this.AnimationBox.TabIndex = 3;
@@ -226,20 +246,21 @@
             this.AnimationButton.TabIndex = 0;
             this.AnimationButton.Text = "Enable";
             this.AnimationButton.UseVisualStyleBackColor = true;
+            this.AnimationButton.Click += new System.EventHandler(this.AnimationButton_Click);
             // 
-            // AnimationTrackBar
+            // zTrackBar
             // 
-            this.AnimationTrackBar.Location = new System.Drawing.Point(89, 16);
-            this.AnimationTrackBar.Name = "AnimationTrackBar";
-            this.AnimationTrackBar.Size = new System.Drawing.Size(159, 45);
-            this.AnimationTrackBar.TabIndex = 3;
+            this.zTrackBar.Location = new System.Drawing.Point(89, 16);
+            this.zTrackBar.Name = "zTrackBar";
+            this.zTrackBar.Size = new System.Drawing.Size(159, 45);
+            this.zTrackBar.TabIndex = 3;
             // 
             // NormalMap
             // 
             this.NormalMap.Controls.Add(this.NormalMapCheckBox);
-            this.NormalMap.Location = new System.Drawing.Point(518, 442);
+            this.NormalMap.Location = new System.Drawing.Point(518, 439);
             this.NormalMap.Name = "NormalMap";
-            this.NormalMap.Size = new System.Drawing.Size(254, 86);
+            this.NormalMap.Size = new System.Drawing.Size(254, 89);
             this.NormalMap.TabIndex = 4;
             this.NormalMap.TabStop = false;
             this.NormalMap.Text = "NormalMap";
@@ -258,7 +279,7 @@
             // 
             this.InterpolationBox.Controls.Add(this.FromDirectPointButton);
             this.InterpolationBox.Controls.Add(this.FromVerticesButton);
-            this.InterpolationBox.Location = new System.Drawing.Point(518, 377);
+            this.InterpolationBox.Location = new System.Drawing.Point(518, 374);
             this.InterpolationBox.Name = "InterpolationBox";
             this.InterpolationBox.Size = new System.Drawing.Size(254, 59);
             this.InterpolationBox.TabIndex = 5;
@@ -286,6 +307,15 @@
             this.FromVerticesButton.TabStop = true;
             this.FromVerticesButton.Text = "From vertices";
             this.FromVerticesButton.UseVisualStyleBackColor = true;
+            // 
+            // z_label
+            // 
+            this.z_label.AutoSize = true;
+            this.z_label.Location = new System.Drawing.Point(158, 46);
+            this.z_label.Name = "z_label";
+            this.z_label.Size = new System.Drawing.Size(24, 15);
+            this.z_label.TabIndex = 6;
+            this.z_label.Text = "z: 0";
             // 
             // Visualizer
             // 
@@ -316,7 +346,7 @@
             this.splitContainer1.ResumeLayout(false);
             this.AnimationBox.ResumeLayout(false);
             this.AnimationBox.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.AnimationTrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.zTrackBar)).EndInit();
             this.NormalMap.ResumeLayout(false);
             this.NormalMap.PerformLayout();
             this.InterpolationBox.ResumeLayout(false);
@@ -339,7 +369,7 @@
         private Label ks_label;
         private Label m_label;
         private Button AnimationButton;
-        private TrackBar AnimationTrackBar;
+        private TrackBar zTrackBar;
         private RadioButton TextureRadioButton;
         private RadioButton SolidColorButton;
         private SplitContainer splitContainer1;
@@ -349,5 +379,7 @@
         private GroupBox InterpolationBox;
         private RadioButton FromDirectPointButton;
         private RadioButton FromVerticesButton;
+        private Button ChangeIlluminationColorButton;
+        private Label z_label;
     }
 }
