@@ -1,3 +1,4 @@
+﻿using FastBitmapLib;
 ﻿using Views.Abstract;
 using Views.Enums;
 using Views.Helpers;
@@ -53,6 +54,7 @@ namespace Views
         public Form Form => this;
         public Size CanvasSize => new(DrawArea.Width, DrawArea.Height);
         private Bitmap DrawArea { get; }
+        private FastBitmap FastDrawArea { get; }
         private Graphics Graphics => Graphics.FromImage(DrawArea);
         private Color DefaultColor { get; }
 
@@ -66,6 +68,7 @@ namespace Views
             InitializeComponent();
 
             DrawArea = new Bitmap(PictureBox.Width, PictureBox.Height);
+            FastDrawArea = new FastBitmap(DrawArea);
             PictureBox.Image = DrawArea;
 
             DefaultColor = Color.Black;
@@ -86,6 +89,13 @@ namespace Views
         }
 
         #region Drawing functions
+        public void SetPixel(int x, int y, Color color)
+        {
+            FastDrawArea.Lock();
+            FastDrawArea.SetPixel(x, y, color);
+            FastDrawArea.Unlock();
+        }
+
         public void DrawLine(PointF p1, PointF p2, Color? color = null)
         {
             using var g = Graphics;

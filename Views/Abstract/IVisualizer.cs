@@ -18,6 +18,7 @@ namespace Views.Abstract
         InterpolationMethod InterpolationMethod { get; }
         bool NormalMapModification { get; }
 
+        void SetPixel(int x, int y, Color color);
         void DrawLine(PointF p1, PointF p2, Color? color = null);
         void ClearArea();
         void RefreshArea();
