@@ -53,6 +53,8 @@ namespace Views
         public event EventHandler KsChanged;
         public event EventHandler MChanged;
         public event EventHandler ZChanged;
+        public event EventHandler<Color> IlluminationColorChanged;
+        public event EventHandler<Color> ObjectColorChanged;
 
         public Form Form => this;
         public Size CanvasSize => new(DrawArea.Width, DrawArea.Height);
@@ -163,6 +165,18 @@ namespace Views
                 AnimationButton.Text = "Disable";
             }
             _isAnimation = !_isAnimation;
+        }
+
+        private void ChangeIlluminationColorButton_Click(object sender, EventArgs e)
+        {
+            ColorDialog.ShowDialog();
+            IlluminationColorChanged?.Invoke(sender, ColorDialog.Color);
+        }
+
+        private void ChangeColorButton_Click(object sender, EventArgs e)
+        {
+            ColorDialog.ShowDialog();
+            ObjectColorChanged?.Invoke(sender, ColorDialog.Color);
         }
         #endregion
     }

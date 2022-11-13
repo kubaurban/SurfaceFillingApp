@@ -49,6 +49,8 @@ namespace SurfaceFillingApp
             _visualizer.KsChanged += HandleKsChange;
             _visualizer.MChanged += HandleMChange;
             _visualizer.ZChanged += HandleZChange;
+            _visualizer.IlluminationColorChanged += HandleIlluminationColorChange;
+            _visualizer.ObjectColorChanged += HandleObjectColorChange;
         }
 
         private void HandleKdChange(object? sender, EventArgs e)
@@ -75,6 +77,20 @@ namespace SurfaceFillingApp
         private void HandleZChange(object? sender, EventArgs e)
         {
             _fillingService.LightSource = new(125, 125, _visualizer.Z);
+            DrawSurfaceMesh();
+            _visualizer.RefreshArea();
+        }
+
+        private void HandleObjectColorChange(object? sender, Color e)
+        {
+            _fillingService.Io = e.ToVector();
+            DrawSurfaceMesh();
+            _visualizer.RefreshArea();
+        }
+
+        private void HandleIlluminationColorChange(object? sender, Color e)
+        {
+            _fillingService.Il = e.ToVector();
             DrawSurfaceMesh();
             _visualizer.RefreshArea();
         }

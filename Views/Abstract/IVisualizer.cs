@@ -8,7 +8,8 @@ namespace Views.Abstract
         event EventHandler KsChanged;
         event EventHandler MChanged;
         event EventHandler ZChanged;
-
+        event EventHandler<Color> IlluminationColorChanged;
+        event EventHandler<Color> ObjectColorChanged;
         Form Form { get; }
         Size CanvasSize { get; }
 

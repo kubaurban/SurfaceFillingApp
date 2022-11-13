@@ -44,6 +44,7 @@
             this.ChangeColorButton = new System.Windows.Forms.Button();
             this.ChangeTextureButton = new System.Windows.Forms.Button();
             this.AnimationBox = new System.Windows.Forms.GroupBox();
+            this.z_label = new System.Windows.Forms.Label();
             this.AnimationButton = new System.Windows.Forms.Button();
             this.zTrackBar = new System.Windows.Forms.TrackBar();
             this.NormalMap = new System.Windows.Forms.GroupBox();
@@ -51,7 +52,7 @@
             this.InterpolationBox = new System.Windows.Forms.GroupBox();
             this.FromDirectPointButton = new System.Windows.Forms.RadioButton();
             this.FromVerticesButton = new System.Windows.Forms.RadioButton();
-            this.z_label = new System.Windows.Forms.Label();
+            this.ColorDialog = new System.Windows.Forms.ColorDialog();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBox)).BeginInit();
             this.IlluminationBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.mTrackBar)).BeginInit();
@@ -101,6 +102,7 @@
             this.ChangeIlluminationColorButton.TabIndex = 5;
             this.ChangeIlluminationColorButton.Text = "Change illumiantion color";
             this.ChangeIlluminationColorButton.UseVisualStyleBackColor = true;
+            this.ChangeIlluminationColorButton.Click += new System.EventHandler(this.ChangeIlluminationColorButton_Click);
             // 
             // m_label
             // 
@@ -215,6 +217,7 @@
             this.ChangeColorButton.TabIndex = 1;
             this.ChangeColorButton.Text = "Change color";
             this.ChangeColorButton.UseVisualStyleBackColor = true;
+            this.ChangeColorButton.Click += new System.EventHandler(this.ChangeColorButton_Click);
             // 
             // ChangeTextureButton
             // 
@@ -237,6 +240,15 @@
             this.AnimationBox.TabIndex = 3;
             this.AnimationBox.TabStop = false;
             this.AnimationBox.Text = "Animation";
+            // 
+            // z_label
+            // 
+            this.z_label.AutoSize = true;
+            this.z_label.Location = new System.Drawing.Point(158, 46);
+            this.z_label.Name = "z_label";
+            this.z_label.Size = new System.Drawing.Size(24, 15);
+            this.z_label.TabIndex = 6;
+            this.z_label.Text = "z: 0";
             // 
             // AnimationButton
             // 
@@ -308,15 +320,6 @@
             this.FromVerticesButton.Text = "From vertices";
             this.FromVerticesButton.UseVisualStyleBackColor = true;
             // 
-            // z_label
-            // 
-            this.z_label.AutoSize = true;
-            this.z_label.Location = new System.Drawing.Point(158, 46);
-            this.z_label.Name = "z_label";
-            this.z_label.Size = new System.Drawing.Size(24, 15);
-            this.z_label.TabIndex = 6;
-            this.z_label.Text = "z: 0";
-            // 
             // Visualizer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -381,5 +384,6 @@
         private RadioButton FromVerticesButton;
         private Button ChangeIlluminationColorButton;
         private Label z_label;
+        private ColorDialog ColorDialog;
     }
 }
