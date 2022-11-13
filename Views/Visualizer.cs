@@ -95,14 +95,14 @@ namespace Views
         public void SetPixel(int x, int y, Color color)
         {
             FastDrawArea.Lock();
-            FastDrawArea.SetPixel(x, y, color);
+            FastDrawArea.SetPixel(x, CanvasSize.Height - y, color);
             FastDrawArea.Unlock();
         }
 
         public void DrawLine(PointF p1, PointF p2, Color? color = null)
         {
             using var g = Graphics;
-            g.DrawLine(new(color ?? DefaultColor), p1, p2);
+            g.DrawLine(new(color ?? DefaultColor), p1.X, CanvasSize.Height - p1.Y, p2.X, CanvasSize.Height - p2.Y);
         }
 
         public void ClearArea()

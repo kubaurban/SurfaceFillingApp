@@ -50,7 +50,7 @@ namespace Services
             }
             #endregion
 
-            int y_cur = ET.Max(x => x.Key);
+            int y_cur = ET.Min(x => x.Key);
             do
             {
                 if (ET.TryGetValue(y_cur, out var list))
@@ -65,17 +65,17 @@ namespace Services
                 {
                     for (int j = (int)AET[2 * i].X; j < AET[2 * i + 1].X; j++)
                     {
-                        _visualizer.SetPixel(j, y_cur, ObjectColor);
+                        _visualizer.SetPixel(j, y_cur, GetPixelColor(j, y_cur));
                     }
                 }
 
                 foreach (var node in AET)
                 {
-                    node.X -= node.Coeff;
+                    node.X += node.Coeff;
                 }
 
                 ET.Remove(y_cur);
-                --y_cur;
+                ++y_cur;
             } while (ET.Any() || AET.Any());
         }
 
@@ -85,6 +85,11 @@ namespace Services
             {
                 FillFace(face);
             }
+        }
+
+        private Color GetPixelColor(int x, int y)
+        {
+            return ObjectColor;
         }
     }
 }
