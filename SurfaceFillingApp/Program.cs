@@ -27,6 +27,7 @@ namespace SurfaceFillingApp
             container.RegisterType<IShapeParser, ShapeParser>(new ContainerControlledLifetimeManager());
             container.RegisterType<ICanvas, Canvas>(new ContainerControlledLifetimeManager());
             container.RegisterType<IVisualizer, Visualizer>(new ContainerControlledLifetimeManager());
+            container.RegisterType<IFillingService, FillingService>(new ContainerControlledLifetimeManager());
 
             var parser = container.Resolve<IShapeParser>();
             parser.LoadObj(_pathToObj);

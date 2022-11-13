@@ -1,4 +1,4 @@
-using Services.Abstract;
+﻿using Services.Abstract;
 using SurfaceFillingApp.Abstract;
 using System.Windows.Forms;
 using Views.Abstract;
@@ -9,11 +9,13 @@ namespace SurfaceFillingApp
     {
         private IVisualizer _visualizer;
         private IShapeManager _shapeManager;
+        private IFillingService _fillingService;
 
-        public Canvas(IVisualizer visualizer, IShapeManager manager)
+        public Canvas(IVisualizer visualizer, IShapeManager manager, IFillingService fillingService)
         {
             _visualizer = visualizer;
             _shapeManager = manager;
+            _fillingService = fillingService;
 
             InitVisualizerHandlers();
 
@@ -22,7 +24,7 @@ namespace SurfaceFillingApp
 
             _visualizer.ClearArea();
 
-            FillSurface();
+            _fillingService.FillSurface();
             DrawSurfaceMesh();
 
             _visualizer.RefreshArea();
@@ -34,27 +36,27 @@ namespace SurfaceFillingApp
             _visualizer.KsChanged += HandleKsChange;
             _visualizer.MChanged += HandleMChange;
             _visualizer.ZChanged += HandleZChange;
-            }
+        }
 
         private void HandleKdChange(object? sender, EventArgs e)
         {
             _fillingService.Kd = _visualizer.Kd;
-                }
+        }
 
         private void HandleKsChange(object? sender, EventArgs e)
-            {
+        {
             _fillingService.Ks = _visualizer.Ks;
-                }
+        }
 
         private void HandleMChange(object? sender, EventArgs e)
-                {
+        {
             _fillingService.M = _visualizer.M;
-                }
+        }
 
         private void HandleZChange(object? sender, EventArgs e)
-                {
+        {
             _fillingService.Z = _visualizer.Z;
-                }
+        }
 
         public Form GetForm() => _visualizer.Form;
 
