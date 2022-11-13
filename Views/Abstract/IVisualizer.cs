@@ -11,6 +11,7 @@ namespace Views.Abstract
         event ValueChangedEventHandler<int> ZChanged;
 
         Form Form { get; }
+        Size CanvasSize { get; }
 
         bool Animation { get; }
         FillingMethod FillingMethod { get; }

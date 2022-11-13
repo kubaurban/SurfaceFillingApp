@@ -1,4 +1,5 @@
 ﻿using Models;
+using System.Numerics;
 
 namespace Services.Abstract
 {
@@ -9,5 +10,7 @@ namespace Services.Abstract
         IEnumerable<Edge> GetDistinctEdges();
 
         void AddFace(Face face);
+        void ScaleSurface(int scaleWidth, int scaleHeight);
+        void MoveSurface(Vector3 move);
     }
 }

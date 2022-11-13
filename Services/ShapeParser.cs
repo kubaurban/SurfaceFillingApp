@@ -32,15 +32,14 @@ namespace Services
 
                 var lastVertex = result.Vertices[f[^1].VertexIndex - 1];
                 var lastNormal = result.Normals[f[^1].NormalIndex - 1];
-                var screen = 500 * 0.5f; // TODO: remove
-                var prev = new Vertex(lastVertex.X * screen + screen, lastVertex.Y * screen + screen, lastVertex.Z * screen + screen, new(lastNormal.X, lastNormal.Y, lastNormal.Z));
+                var prev = new Vertex(lastVertex.X, lastVertex.Y, lastVertex.Z, new(lastNormal.X, lastNormal.Y, lastNormal.Z));
 
                 var size = f.Count;
                 for (int i = 0; i < size; i++)
                 {
                     var v = result.Vertices[f[i].VertexIndex - 1];
                     var n = result.Normals[f[i].NormalIndex - 1];
-                    var next = new Vertex(v.X * screen + screen, v.Y * screen + screen, v.Z * screen + screen, new(n.X, n.Y, n.Z));
+                    var next = new Vertex(v.X, v.Y, v.Z, new(n.X, n.Y, n.Z));
 
                     var e = new Edge(prev, next);
                     if (edgeDictionary.TryGetValue(e, out var edge))

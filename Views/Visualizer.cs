@@ -51,6 +51,7 @@ namespace Views
         public event ValueChangedEventHandler<int> ZChanged;
 
         public Form Form => this;
+        public Size CanvasSize => new(DrawArea.Width, DrawArea.Height);
         private Bitmap DrawArea { get; }
         private Graphics Graphics => Graphics.FromImage(DrawArea);
         private Color DefaultColor { get; }

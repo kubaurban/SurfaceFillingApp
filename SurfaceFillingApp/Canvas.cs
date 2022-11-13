@@ -17,6 +17,10 @@ namespace SurfaceFillingApp
             _visualizer = visualizer;
             _shapeManager = manager;
 
+            _shapeManager.ScaleSurface((int)(_visualizer.CanvasSize.Width * 0.9 / 2), (int)(_visualizer.CanvasSize.Height * 0.9 / 2));
+            _shapeManager.ScaleSurface((int)(_visualizer.CanvasSize.Width * 0.95 / 2), (int)(_visualizer.CanvasSize.Height * 0.95 / 2));
+            _shapeManager.MoveSurface(new(_visualizer.CanvasSize.Width / 2, _visualizer.CanvasSize.Height / 2, 0));
+
             _visualizer.ClearArea();
 
             FillSurface();
