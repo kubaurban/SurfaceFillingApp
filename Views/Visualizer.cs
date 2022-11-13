@@ -1,7 +1,6 @@
 ﻿using FastBitmapLib;
 using Views.Abstract;
 using Views.Enums;
-using Views.Helpers;
 
 namespace Views
 {
@@ -122,25 +121,25 @@ namespace Views
         private void OnKdChanged(object sender, EventArgs e)
         {
             Kd = (float)kdTrackBar.Value / kdTrackBar.Maximum;
-            KdChanged?.Invoke(sender, new ValueChangedEventArgs<float>(Kd));
+            KdChanged?.Invoke(sender, e);
         }
 
         private void OnKsChanged(object sender, EventArgs e)
         {
             Ks = (float)ksTrackBar.Value / ksTrackBar.Maximum;
-            KsChanged?.Invoke(sender, new ValueChangedEventArgs<float>(Ks));
+            KsChanged?.Invoke(sender, e);
         }
 
         private void OnMChanged(object sender, EventArgs e)
         {
             M = mTrackBar.Value * 100 / mTrackBar.Maximum;
-            MChanged?.Invoke(sender, new ValueChangedEventArgs<int>(M));
+            MChanged?.Invoke(sender, e);
         }
 
         private void OnZChanged(object sender, EventArgs e)
         {
             Z = zTrackBar.Value * 250 / zTrackBar.Maximum;
-            ZChanged?.Invoke(sender, new ValueChangedEventArgs<int>(Z));
+            ZChanged?.Invoke(sender, e);
         }
 
         private void AnimationButton_Click(object sender, EventArgs e)
