@@ -27,7 +27,7 @@ namespace SurfaceFillingApp
                 _visualizer.Kd,
                 _visualizer.Ks,
                 _visualizer.M,
-                new Vector3(125, 125, _visualizer.Z),
+                _visualizer.LightPosition,
                 Color.SandyBrown.ToVector(),
                 Color.White.ToVector()
             );
@@ -48,9 +48,9 @@ namespace SurfaceFillingApp
             _visualizer.KdChanged += HandleKdChange;
             _visualizer.KsChanged += HandleKsChange;
             _visualizer.MChanged += HandleMChange;
-            _visualizer.ZChanged += HandleZChange;
             _visualizer.IlluminationColorChanged += HandleIlluminationColorChange;
             _visualizer.ObjectColorChanged += HandleObjectColorChange;
+            _visualizer.LightSourceChanged += HandleLightSourceChange;
         }
 
         private void HandleKdChange(object? sender, EventArgs e)
@@ -91,6 +91,13 @@ namespace SurfaceFillingApp
         private void HandleIlluminationColorChange(object? sender, Color e)
         {
             _fillingService.Il = e.ToVector();
+            DrawSurfaceMesh();
+            _visualizer.RefreshArea();
+        }
+
+        private void HandleLightSourceChange(object? sender, Vector3 e)
+        {
+            _fillingService.LightSource = e;
             DrawSurfaceMesh();
             _visualizer.RefreshArea();
         }

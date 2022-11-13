@@ -1,6 +1,8 @@
 ﻿using FastBitmapLib;
+using System.Numerics;
 using Views.Abstract;
 using Views.Enums;
+using Timer = System.Windows.Forms.Timer;
 
 namespace Views
 {
@@ -10,7 +12,9 @@ namespace Views
         private float _kd;
         private float _ks;
         private int _m;
-        private int _z;
+        private int _r;
+        private double _animationAngle;
+        private double _animationStep;
 
         public float Kd
         {
@@ -41,20 +45,20 @@ namespace Views
         }
         public int Z
         {
-            get => _z; 
+            get => (int)LightPosition.Z; 
             private set
             {
-                _z = value;
-                z_label.Text = $"z: {_z}";
+                LightPosition = new(LightPosition.X, LightPosition.Y, value);
+                z_label.Text = $"z: {value}";
             }
         }
 
         public event EventHandler KdChanged;
         public event EventHandler KsChanged;
         public event EventHandler MChanged;
-        public event EventHandler ZChanged;
         public event EventHandler<Color> IlluminationColorChanged;
         public event EventHandler<Color> ObjectColorChanged;
+        public event EventHandler<Vector3> LightSourceChanged;
 
         public Form Form => this;
         public Size CanvasSize => new(DrawArea.Width, DrawArea.Height);
@@ -62,7 +66,20 @@ namespace Views
         private FastBitmap FastDrawArea { get; }
         private Graphics Graphics => Graphics.FromImage(DrawArea);
         private Color DefaultColor { get; }
-
+        private Timer AnimationTimer { get; }
+        /// <summary>
+        /// Set in normal coordinates (not WinForms)
+        /// </summary>
+        public Vector3 LightPosition { get; private set; }
+        private int R
+        {
+            get => _r;
+            set
+            {
+                _r = value;
+                r_label.Text = $"R: {value}";
+            }
+        }
         public bool Animation => _isAnimation;
         public FillingMethod FillingMethod => SolidColorButton.Checked ? FillingMethod.SolidColor : FillingMethod.Texture;
         public InterpolationMethod InterpolationMethod => FromVerticesButton.Checked ? InterpolationMethod.FromVertices : InterpolationMethod.FromDirectPoint;
@@ -76,6 +93,9 @@ namespace Views
             FastDrawArea = new FastBitmap(DrawArea);
             PictureBox.Image = DrawArea;
 
+            AnimationTimer = new Timer();
+            AnimationTimer.Tick += new EventHandler(Timer_Tick);
+
             DefaultColor = Color.Black;
 
             InitDefaultState();
@@ -84,23 +104,32 @@ namespace Views
             ksTrackBar.ValueChanged += OnKsChanged;
             mTrackBar.ValueChanged += OnMChanged;
             zTrackBar.ValueChanged += OnZChanged;
+            rTrackBar.ValueChanged += OnRChanged;
         }
 
         private void InitDefaultState()
         {
             _isAnimation = false;
+            _animationAngle = Math.PI;
+            _animationStep = Math.PI / 8;
+
             SolidColorButton.Checked = true;
             FromVerticesButton.Checked = true;
+
+            R = 125;
+            AnimationTimer.Interval = 100;
+            LightPosition = new(CanvasSize.Width / 2 - R, CanvasSize.Height / 2, 0);
 
             kdTrackBar.Value = kdTrackBar.Maximum / 2;
             ksTrackBar.Value = ksTrackBar.Maximum / 2;
             mTrackBar.Value = mTrackBar.Maximum / 2;
             zTrackBar.Value = zTrackBar.Maximum / 2;
+            rTrackBar.Value = (R - 50) * rTrackBar.Maximum / 200;
 
             Kd = (float)kdTrackBar.Value / kdTrackBar.Maximum;
             Ks = (float)ksTrackBar.Value / ksTrackBar.Maximum;
             M = mTrackBar.Value * 100 / mTrackBar.Maximum;
-            Z = (zTrackBar.Value * 400) / zTrackBar.Maximum + 300;
+            Z = zTrackBar.Value * 400 / zTrackBar.Maximum + 300;
         }
 
         #region Drawing functions
@@ -150,8 +179,13 @@ namespace Views
 
         private void OnZChanged(object sender, EventArgs e)
         {
-            Z = (zTrackBar.Value * 400) / zTrackBar.Maximum + 300;
-            ZChanged?.Invoke(sender, e);
+            Z = zTrackBar.Value * 400 / zTrackBar.Maximum + 300;
+            LightSourceChanged?.Invoke(sender, LightPosition);
+        }
+
+        private void OnRChanged(object sender, EventArgs e)
+        {
+            R = rTrackBar.Value * 200 / rTrackBar.Maximum + 50;
         }
 
         private void AnimationButton_Click(object sender, EventArgs e)
@@ -159,9 +193,11 @@ namespace Views
             if (_isAnimation)
             {
                 AnimationButton.Text = "Enable";
+                AnimationTimer.Stop();
             }
             else
             {
+                AnimationTimer.Start();
                 AnimationButton.Text = "Disable";
             }
             _isAnimation = !_isAnimation;
@@ -177,6 +213,20 @@ namespace Views
         {
             ColorDialog.ShowDialog();
             ObjectColorChanged?.Invoke(sender, ColorDialog.Color);
+        }
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            _animationAngle += _animationStep;
+            _animationAngle %= 2 * Math.PI;
+
+            LightPosition = new(
+                R * (float)Math.Cos(_animationAngle) + CanvasSize.Width / 2,
+                R * (float)Math.Sin(_animationAngle) + CanvasSize.Height / 2,
+                LightPosition.Z
+            );
+
+            LightSourceChanged?.Invoke(sender, LightPosition);
         }
         #endregion
     }

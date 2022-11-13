@@ -1,4 +1,5 @@
-﻿using Views.Enums;
+﻿using System.Numerics;
+using Views.Enums;
 
 namespace Views.Abstract
 {
@@ -7,9 +8,10 @@ namespace Views.Abstract
         event EventHandler KdChanged;
         event EventHandler KsChanged;
         event EventHandler MChanged;
-        event EventHandler ZChanged;
         event EventHandler<Color> IlluminationColorChanged;
         event EventHandler<Color> ObjectColorChanged;
+        event EventHandler<Vector3> LightSourceChanged;
+
         Form Form { get; }
         Size CanvasSize { get; }
 
@@ -17,6 +19,7 @@ namespace Views.Abstract
         float Ks { get; }
         int M { get; }
         int Z { get; }
+        Vector3 LightPosition { get; }
         bool Animation { get; }
         FillingMethod FillingMethod { get; }
         InterpolationMethod InterpolationMethod { get; }
