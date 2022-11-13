@@ -1,7 +1,5 @@
-﻿using Models;
 using Services.Abstract;
 using SurfaceFillingApp.Abstract;
-using System.Drawing;
 using System.Windows.Forms;
 using Views.Abstract;
 
@@ -17,7 +15,8 @@ namespace SurfaceFillingApp
             _visualizer = visualizer;
             _shapeManager = manager;
 
-            _shapeManager.ScaleSurface((int)(_visualizer.CanvasSize.Width * 0.9 / 2), (int)(_visualizer.CanvasSize.Height * 0.9 / 2));
+            InitVisualizerHandlers();
+
             _shapeManager.ScaleSurface((int)(_visualizer.CanvasSize.Width * 0.95 / 2), (int)(_visualizer.CanvasSize.Height * 0.95 / 2));
             _shapeManager.MoveSurface(new(_visualizer.CanvasSize.Width / 2, _visualizer.CanvasSize.Height / 2, 0));
 
@@ -29,6 +28,34 @@ namespace SurfaceFillingApp
             _visualizer.RefreshArea();
         }
 
+        private void InitVisualizerHandlers()
+        {
+            _visualizer.KdChanged += HandleKdChange;
+            _visualizer.KsChanged += HandleKsChange;
+            _visualizer.MChanged += HandleMChange;
+            _visualizer.ZChanged += HandleZChange;
+            }
+
+        private void HandleKdChange(object? sender, EventArgs e)
+        {
+            _fillingService.Kd = _visualizer.Kd;
+                }
+
+        private void HandleKsChange(object? sender, EventArgs e)
+            {
+            _fillingService.Ks = _visualizer.Ks;
+                }
+
+        private void HandleMChange(object? sender, EventArgs e)
+                {
+            _fillingService.M = _visualizer.M;
+                }
+
+        private void HandleZChange(object? sender, EventArgs e)
+                {
+            _fillingService.Z = _visualizer.Z;
+                }
+
         public Form GetForm() => _visualizer.Form;
 
         public void DrawSurfaceMesh()
@@ -36,63 +63,6 @@ namespace SurfaceFillingApp
             foreach (var edge in _shapeManager.GetDistinctEdges())
             {
                 _visualizer.DrawLine(edge.U, edge.V);
-            }
-        }
-
-        private void FillFace(Face face)
-        {
-            var ET = new Dictionary<int, List<Node>>();
-            var AET = new List<Node>();
-
-            #region Preprocessing
-            foreach (var edge in face.Edges)
-            {
-                var node = new Node()
-                {
-                    Ymax = edge.HigherVertex.Y,
-                    X = edge.LowerVertex.X,
-                    Coeff = edge.M == 0 ? 0 : 1 / edge.M
-                };
-
-                var yMin = (int)Math.Round(edge.LowerVertex.Y);
-                if (!ET.TryAdd(yMin, new() { node }))
-                {
-                    ET[yMin].Add(node);
-                }
-            }
-            #endregion
-
-            int y_cur = ET.Max(x => x.Key);
-            do
-            {
-                if (ET.TryGetValue(y_cur, out var list))
-                {
-                    AET.AddRange(list);
-                }
-                AET = AET.OrderBy(x => x.X).ToList();
-
-                AET.RemoveAll(x => y_cur == (int)Math.Round(x.Ymax));
-
-                for (int i = 0; i < AET.Count / 2; i++)
-                {
-                    _visualizer.DrawLine(new(AET[2 * i].X, y_cur), new(AET[2 * i + 1].X, y_cur), Color.Aqua);
-                }
-
-                foreach (var node in AET)
-                {
-                    node.X -= node.Coeff;
-                }
-
-                ET.Remove(y_cur);
-                --y_cur;
-            } while (ET.Any() || AET.Any());
-        }
-
-        public void FillSurface()
-        {
-            foreach (var face in _shapeManager.GetAllFaces())
-            {
-                FillFace(face);
             }
         }
     }

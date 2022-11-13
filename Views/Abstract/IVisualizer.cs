@@ -5,14 +5,18 @@ namespace Views.Abstract
 {
     public interface IVisualizer
     {
-        event ValueChangedEventHandler<float> KdChanged;
-        event ValueChangedEventHandler<float> KsChanged;
-        event ValueChangedEventHandler<int> MChanged;
-        event ValueChangedEventHandler<int> ZChanged;
+        event EventHandler KdChanged;
+        event EventHandler KsChanged;
+        event EventHandler MChanged;
+        event EventHandler ZChanged;
 
         Form Form { get; }
         Size CanvasSize { get; }
 
+        float Kd { get; }
+        float Ks { get; }
+        int M { get; }
+        int Z { get; }
         bool Animation { get; }
         FillingMethod FillingMethod { get; }
         InterpolationMethod InterpolationMethod { get; }

@@ -1,5 +1,5 @@
 ﻿using FastBitmapLib;
-﻿using Views.Abstract;
+using Views.Abstract;
 using Views.Enums;
 using Views.Helpers;
 
@@ -13,43 +13,47 @@ namespace Views
         private int _m;
         private int _z;
 
-        private float Kd
+        public float Kd
         {
-            get => _kd; set
+            get => _kd;
+            private set
             {
                 _kd = value;
                 kd_label.Text = $"kd: {Math.Round(_kd, 2)}";
             }
         }
-        private float Ks
+        public float Ks
         {
-            get => _ks; set
+            get => _ks; 
+            private set
             {
                 _ks = value;
                 ks_label.Text = $"ks: {Math.Round(_ks, 2)}";
             }
         }
-        private int M
+        public int M
         {
-            get => _m; set
+            get => _m; 
+            private set
             {
                 _m = value;
                 m_label.Text = $"m: {_m}";
             }
         }
-        private int Z
+        public int Z
         {
-            get => _z; set
+            get => _z; 
+            private set
             {
                 _z = value;
                 z_label.Text = $"z: {_z}";
             }
         }
 
-        public event ValueChangedEventHandler<float> KdChanged;
-        public event ValueChangedEventHandler<float> KsChanged;
-        public event ValueChangedEventHandler<int> MChanged;
-        public event ValueChangedEventHandler<int> ZChanged;
+        public event EventHandler KdChanged;
+        public event EventHandler KsChanged;
+        public event EventHandler MChanged;
+        public event EventHandler ZChanged;
 
         public Form Form => this;
         public Size CanvasSize => new(DrawArea.Width, DrawArea.Height);
