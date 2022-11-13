@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using Models.Domain;
 
-namespace Models
+namespace Models.Helpers
 {
     public class EdgeComparator : IEqualityComparer<Edge>
     {
@@ -8,7 +9,7 @@ namespace Models
         {
             if (x == null || y == null) return false;
 
-            return (x.V.Equals(y?.V) && x.U.Equals(y?.U)) || (x.V.Equals(y?.U) && x.U.Equals(y?.V));
+            return x.V.Equals(y?.V) && x.U.Equals(y?.U) || x.V.Equals(y?.U) && x.U.Equals(y?.V);
         }
 
         public int GetHashCode([DisallowNull] Edge obj)

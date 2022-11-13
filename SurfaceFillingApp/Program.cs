@@ -1,4 +1,6 @@
 using Microsoft.Practices.Unity;
+using Models.Abstract;
+using Models.Repository;
 using Services;
 using Services.Abstract;
 using SurfaceFillingApp.Abstract;

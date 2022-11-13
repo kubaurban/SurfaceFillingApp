@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using System.Numerics;
 
-namespace Models
+namespace Models.Domain
 {
     public struct Vertex
     {

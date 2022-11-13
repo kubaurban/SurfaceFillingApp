@@ -1,4 +1,6 @@
-﻿using Models;
+﻿using Models.Abstract;
+using Models.Domain;
+using Models.Helpers;
 using ObjLoader.Loader.Loaders;
 using Services.Abstract;
 

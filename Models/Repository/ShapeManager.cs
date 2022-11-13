@@ -1,8 +1,9 @@
-﻿using Models;
-using Services.Abstract;
+﻿using Models.Abstract;
+using Models.Domain;
+using Models.Helpers;
 using System.Numerics;
 
-namespace Services
+namespace Models.Repository
 {
     public class ShapeManager : IShapeManager
     {

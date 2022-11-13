@@ -1,7 +1,7 @@
-﻿using Models;
-using System.Numerics;
+﻿using System.Numerics;
+using Models.Domain;
 
-namespace Services.Abstract
+namespace Models.Abstract
 {
     public interface IShapeManager
     {

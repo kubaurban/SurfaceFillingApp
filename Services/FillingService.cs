@@ -1,4 +1,6 @@
-﻿using Models;
+﻿using Models.Abstract;
+using Models.Domain;
+using Models.Helpers;
 using Services.Abstract;
 using Services.Extensions;
 using System.Drawing;

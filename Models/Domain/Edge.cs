@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace Models
+namespace Models.Domain
 {
     public class Edge
     {

@@ -1,4 +1,4 @@
-﻿namespace Models
+﻿namespace Models.Helpers
 {
     public class Node
     {
