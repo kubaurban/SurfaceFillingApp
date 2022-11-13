@@ -76,12 +76,12 @@ namespace Views
 
             DefaultColor = Color.Black;
 
+            InitDefaultState();
+
             kdTrackBar.ValueChanged += OnKdChanged;
             ksTrackBar.ValueChanged += OnKsChanged;
             mTrackBar.ValueChanged += OnMChanged;
             zTrackBar.ValueChanged += OnZChanged;
-
-            InitDefaultState();
         }
 
         private void InitDefaultState()
@@ -89,6 +89,16 @@ namespace Views
             _isAnimation = false;
             SolidColorButton.Checked = true;
             FromVerticesButton.Checked = true;
+
+            kdTrackBar.Value = kdTrackBar.Maximum / 2;
+            ksTrackBar.Value = ksTrackBar.Maximum / 2;
+            mTrackBar.Value = mTrackBar.Maximum / 2;
+            zTrackBar.Value = zTrackBar.Maximum / 2;
+
+            Kd = (float)kdTrackBar.Value / kdTrackBar.Maximum;
+            Ks = (float)ksTrackBar.Value / ksTrackBar.Maximum;
+            M = mTrackBar.Value * 100 / mTrackBar.Maximum;
+            Z = (zTrackBar.Value * 400) / zTrackBar.Maximum + 300;
         }
 
         #region Drawing functions
@@ -138,7 +148,7 @@ namespace Views
 
         private void OnZChanged(object sender, EventArgs e)
         {
-            Z = zTrackBar.Value * 250 / zTrackBar.Maximum;
+            Z = (zTrackBar.Value * 400) / zTrackBar.Maximum + 300;
             ZChanged?.Invoke(sender, e);
         }
 

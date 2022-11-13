@@ -22,12 +22,12 @@ namespace Services
 
         public IEnumerable<Edge> GetDistinctEdges() => _faces.SelectMany(x => x.Edges).ToHashSet(new EdgeComparator());
 
-        public void ScaleSurface(int scaleWidth, int scaleHeight)
+        public void ScaleSurface(int scale)
         {
             foreach (var uv in GetDistinctEdges())
             {
-                uv.U = new(uv.U.X * scaleWidth, uv.U.Y * scaleHeight, uv.U.Z, uv.U.NormalVector);
-                uv.V = new(uv.V.X * scaleWidth, uv.V.Y * scaleHeight, uv.V.Z, uv.V.NormalVector);
+                uv.U = new(uv.U.X * scale, uv.U.Y * scale, uv.U.Z * scale, uv.U.NormalVector);
+                uv.V = new(uv.V.X * scale, uv.V.Y * scale, uv.V.Z * scale, uv.V.NormalVector);
             }
         }
 
