@@ -2,7 +2,7 @@
 {
     public enum InterpolationMethod
     {
-        FromVertices,
-        FromDirectPoint
+        Color,
+        Vector
     }
 }

@@ -11,7 +11,8 @@ namespace Views.Abstract
         event EventHandler<Color> IlluminationColorChanged;
         event EventHandler<Color> ObjectColorChanged;
         event EventHandler<Vector3> LightSourceChanged;
-
+        event EventHandler FillingMethodChanged;
+        event EventHandler InterpolationMethodChanged;
         Form Form { get; }
         Size CanvasSize { get; }
 

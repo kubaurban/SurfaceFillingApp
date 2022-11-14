@@ -59,6 +59,8 @@ namespace Views
         public event EventHandler<Color> IlluminationColorChanged;
         public event EventHandler<Color> ObjectColorChanged;
         public event EventHandler<Vector3> LightSourceChanged;
+        public event EventHandler FillingMethodChanged;
+        public event EventHandler InterpolationMethodChanged;
 
         public Form Form => this;
         public Size CanvasSize => new(DrawArea.Width, DrawArea.Height);
@@ -82,7 +84,7 @@ namespace Views
         }
         public bool Animation => _isAnimation;
         public FillingMethod FillingMethod => SolidColorButton.Checked ? FillingMethod.SolidColor : FillingMethod.Texture;
-        public InterpolationMethod InterpolationMethod => FromVerticesButton.Checked ? InterpolationMethod.FromVertices : InterpolationMethod.FromDirectPoint;
+        public InterpolationMethod InterpolationMethod => ColorInterpolationButton.Checked ? InterpolationMethod.Color : InterpolationMethod.Vector;
         public bool NormalMapModification => NormalMapCheckBox.Checked;
 
         public Visualizer()
@@ -105,6 +107,9 @@ namespace Views
             mTrackBar.ValueChanged += OnMChanged;
             zTrackBar.ValueChanged += OnZChanged;
             rTrackBar.ValueChanged += OnRChanged;
+
+            SolidColorButton.CheckedChanged += OnFillingMethodChanged;
+            ColorInterpolationButton.CheckedChanged += OnInterpolationMethodChanged;
         }
 
         private void InitDefaultState()
@@ -114,7 +119,7 @@ namespace Views
             _animationStep = Math.PI / 8;
 
             SolidColorButton.Checked = true;
-            FromVerticesButton.Checked = true;
+            ColorInterpolationButton.Checked = true;
 
             R = 125;
             AnimationTimer.Interval = 100;
@@ -186,6 +191,16 @@ namespace Views
         private void OnRChanged(object sender, EventArgs e)
         {
             R = rTrackBar.Value * 200 / rTrackBar.Maximum + 50;
+        }
+
+        private void OnInterpolationMethodChanged(object sender, EventArgs e)
+        {
+            InterpolationMethodChanged?.Invoke(sender, e);
+        }
+
+        private void OnFillingMethodChanged(object sender, EventArgs e)
+        {
+            FillingMethodChanged?.Invoke(sender, e);
         }
 
         private void AnimationButton_Click(object sender, EventArgs e)

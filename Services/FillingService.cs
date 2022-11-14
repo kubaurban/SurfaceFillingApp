@@ -6,6 +6,7 @@ using Services.Extensions;
 using System.Drawing;
 using System.Numerics;
 using Views.Abstract;
+using Views.Enums;
 
 namespace Services
 {
@@ -13,6 +14,9 @@ namespace Services
     {
         private readonly IShapeManager _shapeManager;
         private readonly IVisualizer _visualizer;
+
+        private FillingMethod Filling => _visualizer.FillingMethod;
+        private InterpolationMethod Interpolation => _visualizer.InterpolationMethod;
 
         private float _kd;
         private float _ks;
@@ -27,7 +31,6 @@ namespace Services
             set
             {
                 _kd = value;
-                FillSurface();
             }
         }
         public float Ks
@@ -36,7 +39,6 @@ namespace Services
             set
             {
                 _ks = value;
-                FillSurface();
             }
         }
         public int M
@@ -45,7 +47,6 @@ namespace Services
             set
             {
                 _m = value;
-                FillSurface();
             }
         }
         public Vector3 LightSource
@@ -54,7 +55,6 @@ namespace Services
             set
             {
                 _lightSource = value;
-                FillSurface();
             }
         }
         public Vector3 Io 
@@ -63,7 +63,6 @@ namespace Services
             set 
             { 
                 _io = value;
-                FillSurface();
             } 
         }
         public Vector3 Il
@@ -72,7 +71,6 @@ namespace Services
             set
             {
                 _il = value;
-                FillSurface();
             }
         }
 
@@ -147,11 +145,28 @@ namespace Services
         private Color GetPixelColor(int x, int y, Face face)
         {
             var vertices = face.Vertices;
-            var c0 = LambertColor(N(vertices[0]), L(vertices[0]));
-            var c1 = LambertColor(N(vertices[1]), L(vertices[1]));
-            var c2 = LambertColor(N(vertices[2]), L(vertices[2]));
 
-            return Interpolate(c0, c1, c2, InterpolationCoefficients(x, y, face)).ToColor();
+            if (Filling == FillingMethod.SolidColor)
+            {
+                if (Interpolation == InterpolationMethod.Color)
+                {
+                    var c0 = LambertColor(N(vertices[0]), L(vertices[0]));
+                    var c1 = LambertColor(N(vertices[1]), L(vertices[1]));
+                    var c2 = LambertColor(N(vertices[2]), L(vertices[2]));
+                    return Interpolate(c0, c1, c2, InterpolationCoefficients(x, y, face)).ToColor();
+                }
+                else
+                {
+                    var coeffs = InterpolationCoefficients(x, y, face);
+                    var nv = Interpolate(N(vertices[0]), N(vertices[1]), N(vertices[2]), coeffs);
+                    var lv = Interpolate(L(vertices[0]), L(vertices[1]), L(vertices[2]), coeffs);
+                    return LambertColor(Vector3.Normalize(nv), Vector3.Normalize(lv)).ToColor();
+                }
+            }
+            else
+            {
+                return Color.Black;
+            }
         }
 
         public void FillSurface()

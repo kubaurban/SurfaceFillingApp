@@ -38,7 +38,7 @@ namespace SurfaceFillingApp
             _visualizer.ClearArea();
 
             _fillingService.FillSurface();
-            DrawSurfaceMesh();
+            //DrawSurfaceMesh();
 
             _visualizer.RefreshArea();
         }
@@ -51,55 +51,57 @@ namespace SurfaceFillingApp
             _visualizer.IlluminationColorChanged += HandleIlluminationColorChange;
             _visualizer.ObjectColorChanged += HandleObjectColorChange;
             _visualizer.LightSourceChanged += HandleLightSourceChange;
+            _visualizer.FillingMethodChanged += HandleFillingParameterChange;
+            _visualizer.InterpolationMethodChanged += HandleFillingParameterChange;
+        }
+
+        private void HandleFillingParameterChange(object? sender, EventArgs e)
+        {
+            _fillingService.FillSurface();
+            //DrawSurfaceMesh();
+            _visualizer.RefreshArea();
         }
 
         private void HandleKdChange(object? sender, EventArgs e)
         {
             _fillingService.Kd = _visualizer.Kd;
-            DrawSurfaceMesh();
-            _visualizer.RefreshArea();
+            HandleFillingParameterChange(sender, e);
         }
 
         private void HandleKsChange(object? sender, EventArgs e)
         {
             _fillingService.Ks = _visualizer.Ks;
-            DrawSurfaceMesh();
-            _visualizer.RefreshArea();
+            HandleFillingParameterChange(sender, e);
         }
 
         private void HandleMChange(object? sender, EventArgs e)
         {
             _fillingService.M = _visualizer.M;
-            DrawSurfaceMesh();
-            _visualizer.RefreshArea();
+            HandleFillingParameterChange(sender, e);
         }
 
         private void HandleZChange(object? sender, EventArgs e)
         {
             _fillingService.LightSource = new(125, 125, _visualizer.Z);
-            DrawSurfaceMesh();
-            _visualizer.RefreshArea();
+            HandleFillingParameterChange(sender, e);
         }
 
         private void HandleObjectColorChange(object? sender, Color e)
         {
             _fillingService.Io = e.ToVector();
-            DrawSurfaceMesh();
-            _visualizer.RefreshArea();
+            HandleFillingParameterChange(sender, EventArgs.Empty);
         }
 
         private void HandleIlluminationColorChange(object? sender, Color e)
         {
             _fillingService.Il = e.ToVector();
-            DrawSurfaceMesh();
-            _visualizer.RefreshArea();
+            HandleFillingParameterChange(sender, EventArgs.Empty);
         }
 
         private void HandleLightSourceChange(object? sender, Vector3 e)
         {
             _fillingService.LightSource = e;
-            DrawSurfaceMesh();
-            _visualizer.RefreshArea();
+            HandleFillingParameterChange(sender, EventArgs.Empty);
         }
 
         public Form GetForm() => _visualizer.Form;
