@@ -22,6 +22,9 @@ namespace Services
         private Vector3 _il;
 
         private readonly Dictionary<(int x, int y), (float u, float v, float w)> _interpolationCoeffs;
+        private readonly Dictionary<Vertex, Vector3> _vertexNormalVectors;
+        private readonly Dictionary<(int x, int y), Vector3> _interpNormalVectors;
+        private readonly Dictionary<(int x, int y), Vector3> _normalMapVectors;
 
         public float Kd
         {
@@ -72,6 +75,9 @@ namespace Services
             _shapeManager = shapeManager;
             _visualizer = visualizer;
             _interpolationCoeffs = new();
+            _vertexNormalVectors = new();
+            _interpNormalVectors = new();
+            _normalMapVectors = new();
 
             Filling = FillingMethod.SolidColor;
             Filler = new ColorFiller(Color.Aqua);
@@ -83,6 +89,12 @@ namespace Services
         {
             foreach (var face in _shapeManager.GetAllFaces())
             {
+                var vertices = face.Vertices;
+
+                _vertexNormalVectors[vertices[0]] = Vector3.Normalize(vertices[0].NormalVector);
+                _vertexNormalVectors[vertices[1]] = Vector3.Normalize(vertices[1].NormalVector);
+                _vertexNormalVectors[vertices[2]] = Vector3.Normalize(vertices[2].NormalVector);
+
                 FillFacePreprocessing(face, out var ET);
 
                 var AET = new List<Node>();
@@ -103,6 +115,8 @@ namespace Services
                         {
                             var coeffs = InterpolationCoefficients(j, y_cur, face);
                             _interpolationCoeffs[(j, y_cur)] = coeffs;
+                            _interpNormalVectors[(j, y_cur)] = Interpolate(_vertexNormalVectors[vertices[0]], 
+                                _vertexNormalVectors[vertices[1]], _vertexNormalVectors[vertices[2]], coeffs);
                         }
                     }
 
@@ -118,7 +132,7 @@ namespace Services
         }
 
         public void SetParameters(float kd, float ks, int m, Vector3 lightSource, Vector3 il,
-            FillingMethod fm, IFiller filler, InterpolationMethod inter) 
+            FillingMethod fm, IFiller filler, InterpolationMethod inter)
         {
             _kd = kd;
             _ks = ks;
@@ -191,39 +205,18 @@ namespace Services
         {
             var vertices = face.Vertices;
 
-            if (Filling == FillingMethod.SolidColor)
+            if (Interpolation == InterpolationMethod.Color)
             {
-                if (Interpolation == InterpolationMethod.Color)
-                {
-                    var c0 = LambertColor((int)vertices[0].X, (int)vertices[0].Y, N(vertices[0]), L(vertices[0]));
-                    var c1 = LambertColor((int)vertices[1].X, (int)vertices[1].Y, N(vertices[1]), L(vertices[1]));
-                    var c2 = LambertColor((int)vertices[2].X, (int)vertices[2].Y, N(vertices[2]), L(vertices[2]));
-                    return Interpolate(c0, c1, c2, _interpolationCoeffs[(x, y)]).ToColor();
-                }
-                else
-                {
-                    var coeffs = _interpolationCoeffs[(x, y)];
-                    var nv = Interpolate(N(vertices[0]), N(vertices[1]), N(vertices[2]), coeffs);
-                    var lv = Interpolate(L(vertices[0]), L(vertices[1]), L(vertices[2]), coeffs);
-                    return LambertColor(x, y, Vector3.Normalize(nv), Vector3.Normalize(lv)).ToColor();
-                }
+                var c0 = LambertColor((int)vertices[0].X, (int)vertices[0].Y, _vertexNormalVectors[vertices[0]], L(vertices[0]));
+                var c1 = LambertColor((int)vertices[1].X, (int)vertices[1].Y, _vertexNormalVectors[vertices[1]], L(vertices[1]));
+                var c2 = LambertColor((int)vertices[2].X, (int)vertices[2].Y, _vertexNormalVectors[vertices[2]], L(vertices[2]));
+                return Interpolate(c0, c1, c2, _interpolationCoeffs[(x, y)]).ToColor();
             }
             else
             {
-                if (Interpolation == InterpolationMethod.Color)
-                {
-                    var c0 = LambertColor((int)vertices[0].X, (int)vertices[0].Y, N(vertices[0]), L(vertices[0]));
-                    var c1 = LambertColor((int)vertices[1].X, (int)vertices[1].Y, N(vertices[1]), L(vertices[1]));
-                    var c2 = LambertColor((int)vertices[2].X, (int)vertices[2].Y, N(vertices[2]), L(vertices[2]));
-                    return Interpolate(c0, c1, c2, InterpolationCoefficients(x, y, face)).ToColor();
-                }
-                else
-                {
-                    var coeffs = InterpolationCoefficients(x, y, face);
-                    var nv = Interpolate(N(vertices[0]), N(vertices[1]), N(vertices[2]), coeffs);
-                    var lv = Interpolate(L(vertices[0]), L(vertices[1]), L(vertices[2]), coeffs);
-                    return LambertColor(x, y, Vector3.Normalize(nv), Vector3.Normalize(lv)).ToColor();
-                }
+                var nv = _interpNormalVectors[(x, y)];
+                var lv = Interpolate(L(vertices[0]), L(vertices[1]), L(vertices[2]), _interpolationCoeffs[(x, y)]);
+                return LambertColor(x, y, Vector3.Normalize(nv), Vector3.Normalize(lv)).ToColor();
             }
         }
 
@@ -272,7 +265,6 @@ namespace Services
             return Vector3.Cross(a.AsVector2D, b.AsVector2D).Length() / 2;
         }
 
-        private static Vector3 N(Vertex v) => Vector3.Normalize(v.NormalVector);
         private Vector3 L(Vertex v) => Vector3.Normalize(new(LightSource.X - v.X, LightSource.Y - v.Y, LightSource.Z - v.Z));
     }
 }
