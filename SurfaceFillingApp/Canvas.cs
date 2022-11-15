@@ -88,7 +88,6 @@ namespace SurfaceFillingApp
             RefreshAll();
         }
 
-
         private void HandleFillingMethodChange(object? sender, FillingMethod e) => _fillingService.Filling = e;
 
         private void HandleInterpolationMethodChange(object? sender, InterpolationMethod e)

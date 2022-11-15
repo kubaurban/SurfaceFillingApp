@@ -9,7 +9,6 @@ namespace Views
     public partial class Visualizer : Form, IVisualizer
     {
         private readonly Bitmap _drawArea;
-        private Graphics _graphics;
         private readonly Color _defaultColor;
         private bool _isAnimation;
         private float _kd;
@@ -19,6 +18,7 @@ namespace Views
         private readonly Timer _animationTimer;
         private double _animationAngle;
         private double _animationStep;
+        private Graphics Graphics => Graphics.FromImage(_drawArea);
 
         public float Kd
         {
@@ -98,7 +98,6 @@ namespace Views
             InitializeComponent();
 
             _drawArea = new Bitmap(PictureBox.Width, PictureBox.Height);
-            _graphics = Graphics.FromImage(_drawArea);
 
             _animationTimer = new Timer();
             _animationTimer.Tick += OnTimerTick;
@@ -141,13 +140,13 @@ namespace Views
 
         public void DrawLine(PointF p1, PointF p2, Color? color = null)
         {
-            using var g = _graphics;
+            using var g = Graphics;
             g.DrawLine(new(color ?? _defaultColor), p1.X, CanvasSize.Height - p1.Y, p2.X, CanvasSize.Height - p2.Y);
         }
 
         public void ClearArea()
         {
-            using var g = _graphics;
+            using var g = Graphics;
             g.Clear(Color.White);
         }
 
