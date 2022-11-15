@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using Views.Enums;
 
 namespace Services.Abstract
 {
@@ -8,10 +9,12 @@ namespace Services.Abstract
         float Ks { get; set; }
         int M { get; set; }
         Vector3 LightSource { get; set; }
-        Vector3 Io { get; set; }
         Vector3 Il { get; set; }
+        IFiller Filler { get; set; }
+        FillingMethod Filling { get; set; }
+        InterpolationMethod Interpolation { get; set; }
 
-        void SetParameters(float kd, float ks, int m, Vector3 lightSource, Vector3 io, Vector3 il);
+        void SetParameters(float kd, float ks, int m, Vector3 lightSource, Vector3 il, FillingMethod filling, IFiller filler, InterpolationMethod interpolation);
         void FillSurface();
     }
 }

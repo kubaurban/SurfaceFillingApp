@@ -15,14 +15,10 @@ namespace Services
         private readonly IShapeManager _shapeManager;
         private readonly IVisualizer _visualizer;
 
-        private FillingMethod Filling => _visualizer.FillingMethod;
-        private InterpolationMethod Interpolation => _visualizer.InterpolationMethod;
-
         private float _kd;
         private float _ks;
         private int _m;
         private Vector3 _lightSource;
-        private Vector3 _io;
         private Vector3 _il;
 
         public float Kd
@@ -57,14 +53,6 @@ namespace Services
                 _lightSource = value;
             }
         }
-        public Vector3 Io 
-        { 
-            get => _io; 
-            set 
-            { 
-                _io = value;
-            } 
-        }
         public Vector3 Il
         {
             get => _il;
@@ -73,21 +61,32 @@ namespace Services
                 _il = value;
             }
         }
+        public IFiller Filler { get; set; }
+        public FillingMethod Filling { get; set; }
+        public InterpolationMethod Interpolation { get; set; }
 
         public FillingService(IShapeManager shapeManager, IVisualizer visualizer)
         {
             _shapeManager = shapeManager;
             _visualizer = visualizer;
+
+            Filling = FillingMethod.SolidColor;
+            Filler = new ColorFiller(Color.Aqua);
+
+            Interpolation = InterpolationMethod.Color;
         }
 
-        public void SetParameters(float kd, float ks, int m, Vector3 lightSource, Vector3 io, Vector3 il) 
+        public void SetParameters(float kd, float ks, int m, Vector3 lightSource, Vector3 il,
+            FillingMethod fm, IFiller filler, InterpolationMethod inter) 
         {
             _kd = kd;
             _ks = ks;
             _m = m;
             _lightSource = lightSource;
-            _io = io;
             _il = il;
+            Filling = fm;
+            Filler = filler;
+            Interpolation = inter;
         }
 
         private void FillFace(Face face)
@@ -150,9 +149,9 @@ namespace Services
             {
                 if (Interpolation == InterpolationMethod.Color)
                 {
-                    var c0 = LambertColor(N(vertices[0]), L(vertices[0]));
-                    var c1 = LambertColor(N(vertices[1]), L(vertices[1]));
-                    var c2 = LambertColor(N(vertices[2]), L(vertices[2]));
+                    var c0 = LambertColor((int)vertices[0].X, (int)vertices[0].Y, N(vertices[0]), L(vertices[0]));
+                    var c1 = LambertColor((int)vertices[1].X, (int)vertices[1].Y, N(vertices[1]), L(vertices[1]));
+                    var c2 = LambertColor((int)vertices[2].X, (int)vertices[2].Y, N(vertices[2]), L(vertices[2]));
                     return Interpolate(c0, c1, c2, InterpolationCoefficients(x, y, face)).ToColor();
                 }
                 else
@@ -160,7 +159,7 @@ namespace Services
                     var coeffs = InterpolationCoefficients(x, y, face);
                     var nv = Interpolate(N(vertices[0]), N(vertices[1]), N(vertices[2]), coeffs);
                     var lv = Interpolate(L(vertices[0]), L(vertices[1]), L(vertices[2]), coeffs);
-                    return LambertColor(Vector3.Normalize(nv), Vector3.Normalize(lv)).ToColor();
+                    return LambertColor(x, y, Vector3.Normalize(nv), Vector3.Normalize(lv)).ToColor();
                 }
             }
             else
@@ -168,6 +167,8 @@ namespace Services
                 return Color.Black;
             }
         }
+
+        public Vector3 Io(int x, int y) => Filler.GetPixelColorVector(x, _visualizer.CanvasSize.Height - y);
 
         public void FillSurface()
         {
@@ -177,7 +178,7 @@ namespace Services
             }
         }
 
-        private Vector3 LambertColor(Vector3 N, Vector3 L)
+        private Vector3 LambertColor(int x, int y, Vector3 N, Vector3 L)
         {
             Vector3 R = 2 * Vector3.Dot(N, L) * N - L;
 
@@ -187,7 +188,7 @@ namespace Services
             if (cos_1 < 0) cos_1 = 0;
             if (cos_2 < 0) cos_2 = 0;
 
-            return Io * Il * (Kd * cos_1 + Ks * (float)Math.Pow(cos_2, M));
+            return Io(x, y) * Il * (Kd * cos_1 + Ks * (float)Math.Pow(cos_2, M));
         }
 
         private (float u, float v, float w) InterpolationCoefficients(int x, int y, Face face) // vertices interpolation
