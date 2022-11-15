@@ -18,6 +18,8 @@ namespace SurfaceFillingApp
         private readonly IFillingService _fillingService;
 
         private bool DrawMesh { get; set; }
+        private bool ModifyWithNormalMap { get; set; }
+
         public Canvas(IVisualizer visualizer, IShapeManager manager, IFillingService fillingService)
         {
             _visualizer = visualizer;
@@ -68,9 +70,23 @@ namespace SurfaceFillingApp
             _visualizer.FillingMethodChanged += HandleFillingMethodChange;
             _visualizer.InterpolationMethodChanged += HandleInterpolationMethodChange;
             _visualizer.TextureChanged += HandleTextureChange;
+            _visualizer.DrawMeshChanged += HandleDrawMeshChanged;
+            _visualizer.NormalMapChanged += HandleNormalMapChanged;
+            _visualizer.ModifyWithNormalMapChanged += HandleModifyWithNormalMapChanged;
         }
 
+        private void HandleModifyWithNormalMapChanged(object? sender, bool e) => ModifyWithNormalMap = e;
 
+        private void HandleNormalMapChanged(object? sender, string e)
+        {
+            return;
+        }
+
+        private void HandleDrawMeshChanged(object? sender, bool e)
+        {
+            DrawMesh = e;
+            RefreshAll();
+        }
 
 
         private void HandleFillingMethodChange(object? sender, FillingMethod e) => _fillingService.Filling = e;

@@ -50,11 +50,14 @@
             this.AnimationBox = new System.Windows.Forms.GroupBox();
             this.AnimationButton = new System.Windows.Forms.Button();
             this.NormalMap = new System.Windows.Forms.GroupBox();
+            this.ChangeNormalMapButton = new System.Windows.Forms.Button();
             this.NormalMapCheckBox = new System.Windows.Forms.CheckBox();
             this.InterpolationBox = new System.Windows.Forms.GroupBox();
             this.VectorInterpolationButton = new System.Windows.Forms.RadioButton();
             this.ColorInterpolationButton = new System.Windows.Forms.RadioButton();
             this.ColorDialog = new System.Windows.Forms.ColorDialog();
+            this.OpenFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.DrawMeshCheckbox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBox)).BeginInit();
             this.IlluminationBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.zTrackBar)).BeginInit();
@@ -74,7 +77,7 @@
             // 
             // PictureBox
             // 
-            this.PictureBox.Location = new System.Drawing.Point(12, 28);
+            this.PictureBox.Location = new System.Drawing.Point(12, 38);
             this.PictureBox.Name = "PictureBox";
             this.PictureBox.Size = new System.Drawing.Size(500, 500);
             this.PictureBox.TabIndex = 0;
@@ -116,7 +119,7 @@
             this.ChangeIlluminationColorButton.TabIndex = 5;
             this.ChangeIlluminationColorButton.Text = "Change color";
             this.ChangeIlluminationColorButton.UseVisualStyleBackColor = true;
-            this.ChangeIlluminationColorButton.Click += new System.EventHandler(this.ChangeIlluminationColorButton_Click);
+            this.ChangeIlluminationColorButton.Click += new System.EventHandler(this.OnChangeIlluminationColorButtonClick);
             // 
             // m_label
             // 
@@ -249,7 +252,7 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.ChangeTextureButton);
             this.splitContainer1.Size = new System.Drawing.Size(248, 46);
-            this.splitContainer1.SplitterDistance = 125;
+            this.splitContainer1.SplitterDistance = 124;
             this.splitContainer1.TabIndex = 2;
             // 
             // ChangeColorButton
@@ -299,6 +302,7 @@
             // 
             // NormalMap
             // 
+            this.NormalMap.Controls.Add(this.ChangeNormalMapButton);
             this.NormalMap.Controls.Add(this.NormalMapCheckBox);
             this.NormalMap.Location = new System.Drawing.Point(518, 449);
             this.NormalMap.Name = "NormalMap";
@@ -306,6 +310,17 @@
             this.NormalMap.TabIndex = 4;
             this.NormalMap.TabStop = false;
             this.NormalMap.Text = "NormalMap";
+            // 
+            // ChangeNormalMapButton
+            // 
+            this.ChangeNormalMapButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.ChangeNormalMapButton.Location = new System.Drawing.Point(49, 47);
+            this.ChangeNormalMapButton.Name = "ChangeNormalMapButton";
+            this.ChangeNormalMapButton.Size = new System.Drawing.Size(157, 31);
+            this.ChangeNormalMapButton.TabIndex = 2;
+            this.ChangeNormalMapButton.Text = "Change NormalMap";
+            this.ChangeNormalMapButton.UseVisualStyleBackColor = true;
+            this.ChangeNormalMapButton.Click += new System.EventHandler(this.OnChangeNormalMapButtonClick);
             // 
             // NormalMapCheckBox
             // 
@@ -316,6 +331,7 @@
             this.NormalMapCheckBox.TabIndex = 0;
             this.NormalMapCheckBox.Text = "Modify with NormalMap";
             this.NormalMapCheckBox.UseVisualStyleBackColor = true;
+            this.NormalMapCheckBox.CheckedChanged += new System.EventHandler(this.OnModifyWithNormalMapChanged);
             // 
             // InterpolationBox
             // 
@@ -349,20 +365,38 @@
             this.ColorInterpolationButton.TabStop = true;
             this.ColorInterpolationButton.Text = "Color";
             this.ColorInterpolationButton.UseVisualStyleBackColor = true;
+            this.ColorInterpolationButton.CheckedChanged += new System.EventHandler(this.OnInterpolationMethodChanged);
+            // 
+            // OpenFileDialog
+            // 
+            this.OpenFileDialog.FileName = "OpenFileDialog";
+            this.OpenFileDialog.InitialDirectory = "../../../..";
+            // 
+            // DrawMeshCheckbox
+            // 
+            this.DrawMeshCheckbox.AutoSize = true;
+            this.DrawMeshCheckbox.Location = new System.Drawing.Point(386, 12);
+            this.DrawMeshCheckbox.Name = "DrawMeshCheckbox";
+            this.DrawMeshCheckbox.Size = new System.Drawing.Size(126, 19);
+            this.DrawMeshCheckbox.TabIndex = 6;
+            this.DrawMeshCheckbox.Text = "Draw surface mesh";
+            this.DrawMeshCheckbox.UseVisualStyleBackColor = true;
+            this.DrawMeshCheckbox.CheckedChanged += new System.EventHandler(this.OnDrawMeshChanged);
             // 
             // Visualizer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(784, 561);
+            this.ClientSize = new System.Drawing.Size(784, 559);
+            this.Controls.Add(this.DrawMeshCheckbox);
             this.Controls.Add(this.InterpolationBox);
             this.Controls.Add(this.NormalMap);
             this.Controls.Add(this.FillingBox);
             this.Controls.Add(this.AnimationBox);
             this.Controls.Add(this.IlluminationBox);
             this.Controls.Add(this.PictureBox);
-            this.MaximumSize = new System.Drawing.Size(800, 600);
-            this.MinimumSize = new System.Drawing.Size(800, 600);
+            this.MaximumSize = new System.Drawing.Size(800, 598);
+            this.MinimumSize = new System.Drawing.Size(800, 598);
             this.Name = "Visualizer";
             this.Text = "Surface Filler";
             ((System.ComponentModel.ISupportInitialize)(this.PictureBox)).EndInit();
@@ -386,6 +420,7 @@
             this.InterpolationBox.ResumeLayout(false);
             this.InterpolationBox.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -418,5 +453,8 @@
         private ColorDialog ColorDialog;
         private Label r_label;
         private TrackBar rTrackBar;
+        private OpenFileDialog OpenFileDialog;
+        private CheckBox DrawMeshCheckbox;
+        private Button ChangeNormalMapButton;
     }
 }

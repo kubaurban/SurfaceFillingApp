@@ -1,5 +1,5 @@
 ﻿using FastBitmapLib;
-﻿using System.Numerics;
+using System.Numerics;
 using Views.Enums;
 
 namespace Views.Abstract

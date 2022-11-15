@@ -196,7 +196,7 @@ namespace Views
             {
                 ChangeColorButton.Enabled = true;
                 ChangeTextureButton.Enabled = false;
-        }
+            }
             else
             {
                 filling = FillingMethod.Texture;
@@ -226,16 +226,16 @@ namespace Views
         {
             if (ColorDialog.ShowDialog() == DialogResult.OK)
             {
-            IlluminationColorChanged?.Invoke(sender, ColorDialog.Color);
-        }
+                IlluminationColorChanged?.Invoke(sender, ColorDialog.Color);
+            }
         }
 
         private void OnChangeColorButtonClick(object sender, EventArgs e)
         {
             if (ColorDialog.ShowDialog() == DialogResult.OK)
             {
-            ObjectColorChanged?.Invoke(sender, ColorDialog.Color);
-        }
+                ObjectColorChanged?.Invoke(sender, ColorDialog.Color);
+            }
         }
 
         private void OnTimerTick(object sender, EventArgs e)
@@ -257,6 +257,24 @@ namespace Views
             if (ShowFileOpenDialog() == DialogResult.OK)
             {
                 TextureChanged?.Invoke(sender, OpenFileDialog.FileName);
+            }
+        }
+
+        private void OnDrawMeshChanged(object sender, EventArgs e)
+        {
+            DrawMeshChanged?.Invoke(sender, DrawMeshCheckbox.Checked);
+        }
+
+        private void OnModifyWithNormalMapChanged(object sender, EventArgs e)
+        {
+            ModifyWithNormalMapChanged?.Invoke(sender, NormalMapCheckBox.Checked);
+        }
+
+        private void OnChangeNormalMapButtonClick(object sender, EventArgs e)
+        {
+            if (ShowFileOpenDialog() == DialogResult.OK)
+            {
+                NormalMapChanged?.Invoke(sender, OpenFileDialog.FileName);
             }
         }
 
