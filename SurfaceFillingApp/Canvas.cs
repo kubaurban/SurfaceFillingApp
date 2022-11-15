@@ -77,11 +77,19 @@ namespace SurfaceFillingApp
             _visualizer.ModifyWithNormalMapChanged += HandleModifyWithNormalMapChanged;
         }
 
-        private void HandleModifyWithNormalMapChanged(object? sender, bool e) => ModifyWithNormalMap = e;
+        private void HandleModifyWithNormalMapChanged(object? sender, bool e)
+        {
+            ModifyWithNormalMap = e;
+            if (!e)
+            {
+                _fillingService.DisableNormalMap();
+            }
+        }
 
         private void HandleNormalMapChanged(object? sender, string e)
         {
-            return;
+            _fillingService.ApplyNormalMap(new NormalMap(e));
+            RefreshAll();
         }
 
         private void HandleDrawMeshChanged(object? sender, bool e)

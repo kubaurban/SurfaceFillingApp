@@ -22,9 +22,12 @@ namespace Services
         private Vector3 _il;
 
         private readonly Dictionary<(int x, int y), (float u, float v, float w)> _interpolationCoeffs;
+
         private readonly Dictionary<Vertex, Vector3> _vertexNormalVectors;
+        private readonly Dictionary<Vertex, Vector3> _effectiveVertexNormalVectors;
+
         private readonly Dictionary<(int x, int y), Vector3> _interpNormalVectors;
-        private readonly Dictionary<(int x, int y), Vector3> _normalMapVectors;
+        private readonly Dictionary<(int x, int y), Vector3> _effectiveInterpNormalVectors;
 
         public float Kd
         {
@@ -75,9 +78,12 @@ namespace Services
             _shapeManager = shapeManager;
             _visualizer = visualizer;
             _interpolationCoeffs = new();
+
             _vertexNormalVectors = new();
+            _effectiveVertexNormalVectors = new();
+
             _interpNormalVectors = new();
-            _normalMapVectors = new();
+            _effectiveInterpNormalVectors = new();
 
             Filling = FillingMethod.SolidColor;
             Filler = new ColorFiller(Color.Aqua);
@@ -91,9 +97,9 @@ namespace Services
             {
                 var vertices = face.Vertices;
 
-                _vertexNormalVectors[vertices[0]] = Vector3.Normalize(vertices[0].NormalVector);
-                _vertexNormalVectors[vertices[1]] = Vector3.Normalize(vertices[1].NormalVector);
-                _vertexNormalVectors[vertices[2]] = Vector3.Normalize(vertices[2].NormalVector);
+                _effectiveVertexNormalVectors[vertices[0]] = _vertexNormalVectors[vertices[0]] = Vector3.Normalize(vertices[0].NormalVector);
+                _effectiveVertexNormalVectors[vertices[1]] = _vertexNormalVectors[vertices[1]] = Vector3.Normalize(vertices[1].NormalVector);
+                _effectiveVertexNormalVectors[vertices[2]] = _vertexNormalVectors[vertices[2]] = Vector3.Normalize(vertices[2].NormalVector);
 
                 FillFacePreprocessing(face, out var ET);
 
@@ -117,6 +123,7 @@ namespace Services
                             _interpolationCoeffs[(j, y_cur)] = coeffs;
                             _interpNormalVectors[(j, y_cur)] = Interpolate(_vertexNormalVectors[vertices[0]], 
                                 _vertexNormalVectors[vertices[1]], _vertexNormalVectors[vertices[2]], coeffs);
+                            _effectiveInterpNormalVectors[(j, y_cur)] = _interpNormalVectors[(j, y_cur)];
                         }
                     }
 
@@ -207,14 +214,14 @@ namespace Services
 
             if (Interpolation == InterpolationMethod.Color)
             {
-                var c0 = LambertColor((int)vertices[0].X, (int)vertices[0].Y, _vertexNormalVectors[vertices[0]], L(vertices[0]));
-                var c1 = LambertColor((int)vertices[1].X, (int)vertices[1].Y, _vertexNormalVectors[vertices[1]], L(vertices[1]));
-                var c2 = LambertColor((int)vertices[2].X, (int)vertices[2].Y, _vertexNormalVectors[vertices[2]], L(vertices[2]));
+                var c0 = LambertColor((int)vertices[0].X, (int)vertices[0].Y, _effectiveVertexNormalVectors[vertices[0]], L(vertices[0]));
+                var c1 = LambertColor((int)vertices[1].X, (int)vertices[1].Y, _effectiveVertexNormalVectors[vertices[1]], L(vertices[1]));
+                var c2 = LambertColor((int)vertices[2].X, (int)vertices[2].Y, _effectiveVertexNormalVectors[vertices[2]], L(vertices[2]));
                 return Interpolate(c0, c1, c2, _interpolationCoeffs[(x, y)]).ToColor();
             }
             else
             {
-                var nv = _interpNormalVectors[(x, y)];
+                var nv = _effectiveInterpNormalVectors[(x, y)];
                 var lv = Interpolate(L(vertices[0]), L(vertices[1]), L(vertices[2]), _interpolationCoeffs[(x, y)]);
                 return LambertColor(x, y, Vector3.Normalize(nv), Vector3.Normalize(lv)).ToColor();
             }
@@ -266,5 +273,66 @@ namespace Services
         }
 
         private Vector3 L(Vertex v) => Vector3.Normalize(new(LightSource.X - v.X, LightSource.Y - v.Y, LightSource.Z - v.Z));
+
+        public void ApplyNormalMap(NormalMap map)
+        {
+            for (int x = 0; x < _visualizer.CanvasSize.Width; x++)
+            {
+                for (int y = 0; y < _visualizer.CanvasSize.Height; y++)
+                {
+                    if (_interpNormalVectors.TryGetValue((x, y), out var N_surf))
+                    {
+                        var B = Vector3.Normalize(Vector3.Cross(N_surf, new(0, 0, 1)));
+                        if (N_surf.X < 1e-6 && N_surf.Y < 1e-6 && Math.Abs(N_surf.Z - 1) < 1e-6)
+                        {
+                            B = new(0, 1, 0);
+                        }
+                        var T = Vector3.Normalize(Vector3.Cross(B, N_surf));
+                        var N_map = map.GetPixelColorVector(x, _visualizer.CanvasSize.Height - y);
+
+                        _effectiveInterpNormalVectors[(x, y)] = Vector3.Normalize(new Vector3()
+                        {
+                            X = T.X * N_surf.X + B.X * N_surf.Y + N_map.X * N_surf.Z,
+                            Y = T.Y * N_surf.X + B.Y * N_surf.Y + N_map.Y * N_surf.Z,
+                            Z = T.Z * N_surf.X + B.Z * N_surf.Y + N_map.Z * N_surf.Z
+                        });
+                    }
+                }
+            }
+
+            foreach (var v in _shapeManager.GetAllFaces().SelectMany(x => x.Vertices).Distinct())
+            {
+                var N_surf = _vertexNormalVectors[v];
+                var B = Vector3.Normalize(Vector3.Cross(N_surf, new(0, 0, 1)));
+                if (N_surf.X < 1e-6 && N_surf.Y < 1e-6 && Math.Abs(N_surf.Z - 1) < 1e-6)
+                {
+                    B = new(0, 1, 0);
+                }
+                var T = Vector3.Normalize(Vector3.Cross(B, N_surf));
+                var N_map = map.GetPixelColorVector((int)v.X, _visualizer.CanvasSize.Height - (int)v.Y);
+
+                _effectiveVertexNormalVectors[v] = Vector3.Normalize(new Vector3()
+                {
+                    X = T.X * N_surf.X + B.X * N_surf.Y + N_map.X * N_surf.Z,
+                    Y = T.Y * N_surf.X + B.Y * N_surf.Y + N_map.Y * N_surf.Z,
+                    Z = T.Z * N_surf.X + B.Z * N_surf.Y + N_map.Z * N_surf.Z
+                });
+            }
+        }
+
+        public void DisableNormalMap()
+        {
+            _effectiveInterpNormalVectors.Clear();
+            _effectiveVertexNormalVectors.Clear();
+
+            foreach (var item in _interpNormalVectors)
+            {
+                _effectiveInterpNormalVectors.Add(item.Key, item.Value);
+            }
+            foreach (var item in _vertexNormalVectors)
+            {
+                _effectiveVertexNormalVectors.Add(item.Key, item.Value);
+            }
+        }
     }
 }

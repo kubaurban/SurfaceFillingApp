@@ -266,6 +266,7 @@ namespace Views
 
         private void OnModifyWithNormalMapChanged(object sender, EventArgs e)
         {
+            ChangeNormalMapButton.Enabled = NormalMapCheckBox.Checked;
             ModifyWithNormalMapChanged?.Invoke(sender, NormalMapCheckBox.Checked);
         }
 

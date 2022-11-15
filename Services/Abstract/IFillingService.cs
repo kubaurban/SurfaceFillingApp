@@ -17,5 +17,7 @@ namespace Services.Abstract
         void ComputeInterpolationCoeffitients();
         void SetParameters(float kd, float ks, int m, Vector3 lightSource, Vector3 il, FillingMethod filling, IFiller filler, InterpolationMethod interpolation);
         void FillSurface();
+        void ApplyNormalMap(NormalMap map);
+        void DisableNormalMap();
     }
 }

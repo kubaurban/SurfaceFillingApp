@@ -143,7 +143,6 @@
             // 
             this.zTrackBar.Location = new System.Drawing.Point(89, 148);
             this.zTrackBar.Maximum = 1000;
-            this.zTrackBar.Minimum = 50;
             this.zTrackBar.Name = "zTrackBar";
             this.zTrackBar.Size = new System.Drawing.Size(159, 45);
             this.zTrackBar.TabIndex = 3;
@@ -321,6 +320,7 @@
             // ChangeNormalMapButton
             // 
             this.ChangeNormalMapButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.ChangeNormalMapButton.Enabled = false;
             this.ChangeNormalMapButton.Location = new System.Drawing.Point(49, 47);
             this.ChangeNormalMapButton.Name = "ChangeNormalMapButton";
             this.ChangeNormalMapButton.Size = new System.Drawing.Size(157, 31);
@@ -376,7 +376,6 @@
             // 
             // OpenFileDialog
             // 
-            this.OpenFileDialog.FileName = "OpenFileDialog";
             this.OpenFileDialog.InitialDirectory = "../../../..";
             // 
             // DrawMeshCheckbox
