@@ -14,6 +14,7 @@ namespace Services.Abstract
         FillingMethod Filling { get; set; }
         InterpolationMethod Interpolation { get; set; }
 
+        void ComputeInterpolationCoeffitients();
         void SetParameters(float kd, float ks, int m, Vector3 lightSource, Vector3 il, FillingMethod filling, IFiller filler, InterpolationMethod interpolation);
         void FillSurface();
     }

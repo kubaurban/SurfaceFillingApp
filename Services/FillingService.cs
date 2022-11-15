@@ -21,6 +21,8 @@ namespace Services
         private Vector3 _lightSource;
         private Vector3 _il;
 
+        private readonly Dictionary<(int x, int y), (float u, float v, float w)> _interpolationCoeffs;
+
         public float Kd
         {
             get => _kd;
@@ -69,11 +71,50 @@ namespace Services
         {
             _shapeManager = shapeManager;
             _visualizer = visualizer;
+            _interpolationCoeffs = new();
 
             Filling = FillingMethod.SolidColor;
             Filler = new ColorFiller(Color.Aqua);
 
             Interpolation = InterpolationMethod.Color;
+        }
+
+        public void ComputeInterpolationCoeffitients()
+        {
+            foreach (var face in _shapeManager.GetAllFaces())
+            {
+                FillFacePreprocessing(face, out var ET);
+
+                var AET = new List<Node>();
+                int y_cur = ET.Min(x => x.Key);
+                do
+                {
+                    if (ET.TryGetValue(y_cur, out var list))
+                    {
+                        AET.AddRange(list);
+                    }
+                    AET = AET.OrderBy(x => x.X).ToList();
+
+                    AET.RemoveAll(x => y_cur == (int)Math.Round(x.Ymax));
+
+                    for (int i = 0; i < AET.Count / 2; i++)
+                    {
+                        for (int j = (int)AET[2 * i].X; j < AET[2 * i + 1].X; j++)
+                        {
+                            var coeffs = InterpolationCoefficients(j, y_cur, face);
+                            _interpolationCoeffs[(j, y_cur)] = coeffs;
+                        }
+                    }
+
+                    foreach (var node in AET)
+                    {
+                        node.X += node.Coeff;
+                    }
+
+                    ET.Remove(y_cur);
+                    ++y_cur;
+                } while (ET.Any() || AET.Any());
+            }
         }
 
         public void SetParameters(float kd, float ks, int m, Vector3 lightSource, Vector3 il,
@@ -91,27 +132,9 @@ namespace Services
 
         private void FillFace(Face face)
         {
-            var ET = new Dictionary<int, List<Node>>();
+            FillFacePreprocessing(face, out var ET);
+
             var AET = new List<Node>();
-
-            #region Preprocessing
-            foreach (var edge in face.Edges)
-            {
-                var node = new Node()
-                {
-                    Ymax = edge.HigherVertex.Y,
-                    X = edge.LowerVertex.X,
-                    Coeff = edge.M == 0 ? 0 : 1 / edge.M
-                };
-
-                var yMin = (int)Math.Round(edge.LowerVertex.Y);
-                if (!ET.TryAdd(yMin, new() { node }))
-                {
-                    ET[yMin].Add(node);
-                }
-            }
-            #endregion
-
             int y_cur = ET.Min(x => x.Key);
             do
             {
@@ -143,6 +166,27 @@ namespace Services
             } while (ET.Any() || AET.Any());
         }
 
+        private static void FillFacePreprocessing(Face face, out Dictionary<int, List<Node>> ET)
+        {
+            ET = new Dictionary<int, List<Node>>();
+
+            foreach (var edge in face.Edges)
+            {
+                var node = new Node()
+                {
+                    Ymax = edge.HigherVertex.Y,
+                    X = edge.LowerVertex.X,
+                    Coeff = edge.M == 0 ? 0 : 1 / edge.M
+                };
+
+                var yMin = (int)Math.Round(edge.LowerVertex.Y);
+                if (!ET.TryAdd(yMin, new() { node }))
+                {
+                    ET[yMin].Add(node);
+                }
+            }
+        }
+
         private Color GetPixelColor(int x, int y, Face face)
         {
             var vertices = face.Vertices;
@@ -154,11 +198,11 @@ namespace Services
                     var c0 = LambertColor((int)vertices[0].X, (int)vertices[0].Y, N(vertices[0]), L(vertices[0]));
                     var c1 = LambertColor((int)vertices[1].X, (int)vertices[1].Y, N(vertices[1]), L(vertices[1]));
                     var c2 = LambertColor((int)vertices[2].X, (int)vertices[2].Y, N(vertices[2]), L(vertices[2]));
-                    return Interpolate(c0, c1, c2, InterpolationCoefficients(x, y, face)).ToColor();
+                    return Interpolate(c0, c1, c2, _interpolationCoeffs[(x, y)]).ToColor();
                 }
                 else
                 {
-                    var coeffs = InterpolationCoefficients(x, y, face);
+                    var coeffs = _interpolationCoeffs[(x, y)];
                     var nv = Interpolate(N(vertices[0]), N(vertices[1]), N(vertices[2]), coeffs);
                     var lv = Interpolate(L(vertices[0]), L(vertices[1]), L(vertices[2]), coeffs);
                     return LambertColor(x, y, Vector3.Normalize(nv), Vector3.Normalize(lv)).ToColor();
