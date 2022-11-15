@@ -12,7 +12,7 @@ namespace SurfaceFillingApp
 {
     internal static class Program
     {
-        private const string _pathToObj = "../../../../sphere.obj";
+        private const string _pathToObj = "../../../../donut.obj";
 
         /// <summary>
         ///  The main entry point for the application.
