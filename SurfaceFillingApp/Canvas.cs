@@ -1,10 +1,8 @@
 ﻿using Models.Abstract;
 using Services;
 using Services.Abstract;
-using Services.Extensions;
 using SurfaceFillingApp.Abstract;
 using System.Drawing;
-using System.Numerics;
 using System.Windows.Forms;
 using Views.Abstract;
 using Views.Enums;
@@ -17,8 +15,13 @@ namespace SurfaceFillingApp
         private readonly IShapeManager _shapeManager;
         private readonly IFillingService _fillingService;
 
-        private bool DrawMesh { get; set; }
-        private bool ModifyWithNormalMap { get; set; }
+        private Color DefaultSolidColor { get; set; }
+        private string DefaultTexturePath { get; set; }
+        private string DefaultNormalMapPath { get; set; }
+
+        private bool DrawMesh => _visualizer.DrawMesh;
+
+        public Form GetForm() => _visualizer.Form;
 
         public Canvas(IVisualizer visualizer, IShapeManager manager, IFillingService fillingService)
         {
@@ -28,12 +31,15 @@ namespace SurfaceFillingApp
 
             InitVisualizerHandlers();
 
-            InitDefaultState();
+            DefaultSolidColor = Color.SandyBrown;
+            DefaultTexturePath = @"..\..\..\..\vader.jpg";
+            DefaultNormalMapPath = @"..\..\..\..\wall.jpg";
 
             _shapeManager.ScaleSurface((int)(_visualizer.CanvasSize.Width * 0.98 / 2));
             _shapeManager.MoveSurface(new(_visualizer.CanvasSize.Width / 2, _visualizer.CanvasSize.Height / 2, 0));
 
-            _fillingService.ComputeInterpolationCoeffitients();
+            _fillingService.EagerLoadFillingAlgorithm();
+            _fillingService.Filler = new ColorFiller(DefaultSolidColor);
 
             _visualizer.ClearArea();
 
@@ -44,45 +50,59 @@ namespace SurfaceFillingApp
             _visualizer.RefreshArea();
         }
 
-        private void InitDefaultState()
-        {
-            DrawMesh = false;
-            ModifyWithNormalMap = false;
-
-            _fillingService.SetParameters(
-                kd: _visualizer.Kd,
-                ks: _visualizer.Ks,
-                m: _visualizer.M,
-                lightSource: _visualizer.LightPosition,
-                il: Color.White.ToVector(),
-                filling: FillingMethod.SolidColor,
-                filler: new ColorFiller(Color.SandyBrown),
-                interpolation: InterpolationMethod.Color
-            );
-        }
-
         private void InitVisualizerHandlers()
         {
-            _visualizer.KdChanged += HandleKdChange;
-            _visualizer.KsChanged += HandleKsChange;
-            _visualizer.MChanged += HandleMChange;
-            _visualizer.IlluminationColorChanged += HandleIlluminationColorChange;
+            _visualizer.KdChanged += HandleFillingParameterChanged;
+            _visualizer.KsChanged += HandleFillingParameterChanged;
+            _visualizer.MChanged += HandleFillingParameterChanged;
+            _visualizer.IlluminationColorChanged += HandleFillingParameterChanged;
             _visualizer.ObjectColorChanged += HandleObjectColorChange;
-            _visualizer.LightSourceChanged += HandleLightSourceChange;
+            _visualizer.LightPositionChanged += HandleFillingParameterChanged;
             _visualizer.FillingMethodChanged += HandleFillingMethodChange;
-            _visualizer.InterpolationMethodChanged += HandleInterpolationMethodChange;
+            _visualizer.InterpolationMethodChanged += HandleFillingParameterChanged;
             _visualizer.TextureChanged += HandleTextureChange;
-            _visualizer.DrawMeshChanged += HandleDrawMeshChanged;
+            _visualizer.DrawMeshChanged += HandleFillingParameterChanged;
             _visualizer.NormalMapChanged += HandleNormalMapChanged;
             _visualizer.ModifyWithNormalMapChanged += HandleModifyWithNormalMapChanged;
         }
 
+        #region View handlers
+        private void HandleFillingParameterChanged(object? sender, EventArgs e) => RefreshAll();
+
+        private void HandleFillingMethodChange(object? sender, EventArgs e)
+        {
+            if (_visualizer.FillingMethod == FillingMethod.SolidColor)
+            {
+                HandleObjectColorChange(sender, DefaultSolidColor);
+            }
+            else
+            {
+                HandleTextureChange(sender, DefaultTexturePath);
+            }
+        }
+
+        private void HandleObjectColorChange(object? sender, Color e)
+        {
+            _fillingService.Filler = new ColorFiller(e);
+            RefreshAll();
+        }
+
+        private void HandleTextureChange(object? sender, string e)
+        {
+            _fillingService.Filler = new TextureFiller(e);
+            RefreshAll();
+        }
+
         private void HandleModifyWithNormalMapChanged(object? sender, bool e)
         {
-            ModifyWithNormalMap = e;
-            if (!e)
+            if (e)
+            {
+                HandleNormalMapChanged(sender, DefaultNormalMapPath);
+            }
+            else
             {
                 _fillingService.DisableNormalMap();
+                RefreshAll();
             }
         }
 
@@ -91,70 +111,7 @@ namespace SurfaceFillingApp
             _fillingService.ApplyNormalMap(new NormalMap(e));
             RefreshAll();
         }
-
-        private void HandleDrawMeshChanged(object? sender, bool e)
-        {
-            DrawMesh = e;
-            RefreshAll();
-        }
-
-        private void HandleFillingMethodChange(object? sender, FillingMethod e) => _fillingService.Filling = e;
-
-        private void HandleInterpolationMethodChange(object? sender, InterpolationMethod e)
-        {
-            _fillingService.Interpolation = e;
-            RefreshAll();
-        }
-
-        private void HandleKdChange(object? sender, EventArgs e)
-        {
-            _fillingService.Kd = _visualizer.Kd;
-            RefreshAll();
-        }
-
-        private void HandleKsChange(object? sender, EventArgs e)
-        {
-            _fillingService.Ks = _visualizer.Ks;
-            RefreshAll();
-        }
-
-        private void HandleMChange(object? sender, EventArgs e)
-        {
-            _fillingService.M = _visualizer.M;
-            RefreshAll();
-        }
-
-        private void HandleZChange(object? sender, EventArgs e)
-        {
-            _fillingService.LightSource = new(125, 125, _visualizer.Z);
-            RefreshAll();
-        }
-
-        private void HandleObjectColorChange(object? sender, Color e)
-        {
-            _fillingService.Filler = new ColorFiller(e);
-            RefreshAll(); 
-        }
-
-        private void HandleTextureChange(object? sender, string e)
-        {
-            _fillingService.Filler = new TextureFiller(e);
-           RefreshAll();
-        }
-
-        private void HandleIlluminationColorChange(object? sender, Color e)
-        {
-            _fillingService.Il = e.ToVector();
-           RefreshAll();
-        }
-
-        private void HandleLightSourceChange(object? sender, Vector3 e)
-        {
-            _fillingService.LightSource = e;
-           RefreshAll();
-        }
-
-        public Form GetForm() => _visualizer.Form;
+        #endregion
 
         public void DrawSurfaceMesh()
         {

@@ -15,12 +15,7 @@ namespace Services
         private readonly IShapeManager _shapeManager;
         private readonly IVisualizer _visualizer;
 
-        private float _kd;
-        private float _ks;
-        private int _m;
-        private Vector3 _lightSource;
-        private Vector3 _il;
-
+        #region Eagerly loaded data for faster surface filling
         private readonly Dictionary<(int x, int y), (float u, float v, float w)> _interpolationCoeffs;
 
         private readonly Dictionary<Vertex, Vector3> _vertexNormalVectors;
@@ -28,50 +23,16 @@ namespace Services
 
         private readonly Dictionary<(int x, int y), Vector3> _interpNormalVectors;
         private readonly Dictionary<(int x, int y), Vector3> _effectiveInterpNormalVectors;
+        #endregion
 
-        public float Kd
-        {
-            get => _kd;
-            set
-            {
-                _kd = value;
-            }
-        }
-        public float Ks
-        {
-            get => _ks;
-            set
-            {
-                _ks = value;
-            }
-        }
-        public int M
-        {
-            get => _m;
-            set
-            {
-                _m = value;
-            }
-        }
-        public Vector3 LightSource
-        {
-            get => _lightSource;
-            set
-            {
-                _lightSource = value;
-            }
-        }
-        public Vector3 Il
-        {
-            get => _il;
-            set
-            {
-                _il = value;
-            }
-        }
+        private float Kd => _visualizer.Kd;
+        private float Ks => _visualizer.Ks;
+        private int M => _visualizer.M;
+        private Vector3 LightPosition => _visualizer.LightPosition;
+        private Vector3 Il => _visualizer.IlluminationColor.ToVector();
+        private InterpolationMethod InterpolationMethod => _visualizer.InterpolationMethod;
+
         public IFiller Filler { get; set; }
-        public FillingMethod Filling { get; set; }
-        public InterpolationMethod Interpolation { get; set; }
 
         public FillingService(IShapeManager shapeManager, IVisualizer visualizer)
         {
@@ -85,13 +46,10 @@ namespace Services
             _interpNormalVectors = new();
             _effectiveInterpNormalVectors = new();
 
-            Filling = FillingMethod.SolidColor;
             Filler = new ColorFiller(Color.Aqua);
-
-            Interpolation = InterpolationMethod.Color;
         }
 
-        public void ComputeInterpolationCoeffitients()
+        public void EagerLoadFillingAlgorithm()
         {
             foreach (var face in _shapeManager.GetAllFaces())
             {
@@ -120,8 +78,9 @@ namespace Services
                         for (int j = (int)AET[2 * i].X; j < AET[2 * i + 1].X; j++)
                         {
                             var coeffs = InterpolationCoefficients(j, y_cur, face);
+
                             _interpolationCoeffs[(j, y_cur)] = coeffs;
-                            _interpNormalVectors[(j, y_cur)] = Interpolate(_vertexNormalVectors[vertices[0]], 
+                            _interpNormalVectors[(j, y_cur)] = Interpolate(_vertexNormalVectors[vertices[0]],
                                 _vertexNormalVectors[vertices[1]], _vertexNormalVectors[vertices[2]], coeffs);
                             _effectiveInterpNormalVectors[(j, y_cur)] = _interpNormalVectors[(j, y_cur)];
                         }
@@ -138,19 +97,51 @@ namespace Services
             }
         }
 
-        public void SetParameters(float kd, float ks, int m, Vector3 lightSource, Vector3 il,
-            FillingMethod fm, IFiller filler, InterpolationMethod inter)
+        public void FillSurface()
         {
-            _kd = kd;
-            _ks = ks;
-            _m = m;
-            _lightSource = lightSource;
-            _il = il;
-            Filling = fm;
-            Filler = filler;
-            Interpolation = inter;
+            foreach (var face in _shapeManager.GetAllFaces())
+            {
+                FillFace(face);
+            }
         }
 
+        #region NormalMap
+        public void ApplyNormalMap(NormalMap map)
+        {
+            for (int x = 0; x < _visualizer.CanvasSize.Width; x++)
+            {
+                for (int y = 0; y < _visualizer.CanvasSize.Height; y++)
+                {
+                    if (_interpNormalVectors.TryGetValue((x, y), out var N_surf))
+                    {
+                        _effectiveInterpNormalVectors[(x, y)] = ComputeEffectiveNormalVector(x, y, N_surf, map);
+                    }
+                }
+            }
+
+            foreach (var v in _shapeManager.GetAllFaces().SelectMany(x => x.Vertices).Distinct())
+            {
+                _effectiveVertexNormalVectors[v] = ComputeEffectiveNormalVector((int)v.X, (int)v.Y, _vertexNormalVectors[v], map);
+            }
+        }
+
+        public void DisableNormalMap()
+        {
+            _effectiveInterpNormalVectors.Clear();
+            _effectiveVertexNormalVectors.Clear();
+
+            foreach (var item in _interpNormalVectors)
+            {
+                _effectiveInterpNormalVectors.Add(item.Key, item.Value);
+            }
+            foreach (var item in _vertexNormalVectors)
+            {
+                _effectiveVertexNormalVectors.Add(item.Key, item.Value);
+            }
+        }
+        #endregion
+
+        #region Face filling algorithm
         private void FillFace(Face face)
         {
             FillFacePreprocessing(face, out var ET);
@@ -207,35 +198,7 @@ namespace Services
                 }
             }
         }
-
-        private Color GetPixelColor(int x, int y, Face face)
-        {
-            var vertices = face.Vertices;
-
-            if (Interpolation == InterpolationMethod.Color)
-            {
-                var c0 = LambertColor((int)vertices[0].X, (int)vertices[0].Y, _effectiveVertexNormalVectors[vertices[0]], L(vertices[0]));
-                var c1 = LambertColor((int)vertices[1].X, (int)vertices[1].Y, _effectiveVertexNormalVectors[vertices[1]], L(vertices[1]));
-                var c2 = LambertColor((int)vertices[2].X, (int)vertices[2].Y, _effectiveVertexNormalVectors[vertices[2]], L(vertices[2]));
-                return Interpolate(c0, c1, c2, _interpolationCoeffs[(x, y)]).ToColor();
-            }
-            else
-            {
-                var nv = _effectiveInterpNormalVectors[(x, y)];
-                var lv = Interpolate(L(vertices[0]), L(vertices[1]), L(vertices[2]), _interpolationCoeffs[(x, y)]);
-                return LambertColor(x, y, Vector3.Normalize(nv), Vector3.Normalize(lv)).ToColor();
-            }
-        }
-
-        public Vector3 Io(int x, int y) => Filler.GetPixelColorVector(x, _visualizer.CanvasSize.Height - y);
-
-        public void FillSurface()
-        {
-            foreach (var face in _shapeManager.GetAllFaces())
-            {
-                FillFace(face);
-            }
-        }
+        #endregion
 
         private Vector3 LambertColor(int x, int y, Vector3 N, Vector3 L)
         {
@@ -248,6 +211,25 @@ namespace Services
             if (cos_2 < 0) cos_2 = 0;
 
             return Io(x, y) * Il * (Kd * cos_1 + Ks * (float)Math.Pow(cos_2, M));
+        }
+
+        private Color GetPixelColor(int x, int y, Face face)
+        {
+            var vertices = face.Vertices;
+
+            if (InterpolationMethod == InterpolationMethod.Color)
+            {
+                var c0 = LambertColor((int)vertices[0].X, (int)vertices[0].Y, _effectiveVertexNormalVectors[vertices[0]], L(vertices[0]));
+                var c1 = LambertColor((int)vertices[1].X, (int)vertices[1].Y, _effectiveVertexNormalVectors[vertices[1]], L(vertices[1]));
+                var c2 = LambertColor((int)vertices[2].X, (int)vertices[2].Y, _effectiveVertexNormalVectors[vertices[2]], L(vertices[2]));
+                return Interpolate(c0, c1, c2, _interpolationCoeffs[(x, y)]).ToColor();
+            }
+            else
+            {
+                var nv = _effectiveInterpNormalVectors[(x, y)];
+                var lv = Interpolate(L(vertices[0]), L(vertices[1]), L(vertices[2]), _interpolationCoeffs[(x, y)]);
+                return LambertColor(x, y, nv, lv).ToColor();
+            }
         }
 
         private static (float u, float v, float w) InterpolationCoefficients(int x, int y, Face face)
@@ -272,67 +254,26 @@ namespace Services
             return Vector3.Cross(a.AsVector2D, b.AsVector2D).Length() / 2;
         }
 
-        private Vector3 L(Vertex v) => Vector3.Normalize(new(LightSource.X - v.X, LightSource.Y - v.Y, LightSource.Z - v.Z));
+        private Vector3 Io(int x, int y) => Filler.GetPixelColorVector(x, _visualizer.CanvasSize.Height - y);
 
-        public void ApplyNormalMap(NormalMap map)
+        private Vector3 L(Vertex v) => Vector3.Normalize(new(LightPosition.X - v.X, LightPosition.Y - v.Y, LightPosition.Z - v.Z));
+
+        private Vector3 ComputeEffectiveNormalVector(int x, int y, Vector3 N_surf, NormalMap map)
         {
-            for (int x = 0; x < _visualizer.CanvasSize.Width; x++)
+            var B = Vector3.Normalize(Vector3.Cross(N_surf, new(0, 0, 1)));
+            if (N_surf.X < 1e-6 && N_surf.Y < 1e-6 && Math.Abs(N_surf.Z - 1) < 1e-6)
             {
-                for (int y = 0; y < _visualizer.CanvasSize.Height; y++)
-                {
-                    if (_interpNormalVectors.TryGetValue((x, y), out var N_surf))
-                    {
-                        var B = Vector3.Normalize(Vector3.Cross(N_surf, new(0, 0, 1)));
-                        if (N_surf.X < 1e-6 && N_surf.Y < 1e-6 && Math.Abs(N_surf.Z - 1) < 1e-6)
-                        {
-                            B = new(0, 1, 0);
-                        }
-                        var T = Vector3.Normalize(Vector3.Cross(B, N_surf));
-                        var N_map = map.GetPixelColorVector(x, _visualizer.CanvasSize.Height - y);
-
-                        _effectiveInterpNormalVectors[(x, y)] = Vector3.Normalize(new Vector3()
-                        {
-                            X = T.X * N_surf.X + B.X * N_surf.Y + N_map.X * N_surf.Z,
-                            Y = T.Y * N_surf.X + B.Y * N_surf.Y + N_map.Y * N_surf.Z,
-                            Z = T.Z * N_surf.X + B.Z * N_surf.Y + N_map.Z * N_surf.Z
-                        });
-                    }
-                }
+                B = new(0, 1, 0);
             }
+            var T = Vector3.Normalize(Vector3.Cross(B, N_surf));
+            var N_map = map.GetPixelColorVector(x, _visualizer.CanvasSize.Height - y);
 
-            foreach (var v in _shapeManager.GetAllFaces().SelectMany(x => x.Vertices).Distinct())
+            return Vector3.Normalize(new()
             {
-                var N_surf = _vertexNormalVectors[v];
-                var B = Vector3.Normalize(Vector3.Cross(N_surf, new(0, 0, 1)));
-                if (N_surf.X < 1e-6 && N_surf.Y < 1e-6 && Math.Abs(N_surf.Z - 1) < 1e-6)
-                {
-                    B = new(0, 1, 0);
-                }
-                var T = Vector3.Normalize(Vector3.Cross(B, N_surf));
-                var N_map = map.GetPixelColorVector((int)v.X, _visualizer.CanvasSize.Height - (int)v.Y);
-
-                _effectiveVertexNormalVectors[v] = Vector3.Normalize(new Vector3()
-                {
-                    X = T.X * N_surf.X + B.X * N_surf.Y + N_map.X * N_surf.Z,
-                    Y = T.Y * N_surf.X + B.Y * N_surf.Y + N_map.Y * N_surf.Z,
-                    Z = T.Z * N_surf.X + B.Z * N_surf.Y + N_map.Z * N_surf.Z
-                });
-            }
-        }
-
-        public void DisableNormalMap()
-        {
-            _effectiveInterpNormalVectors.Clear();
-            _effectiveVertexNormalVectors.Clear();
-
-            foreach (var item in _interpNormalVectors)
-            {
-                _effectiveInterpNormalVectors.Add(item.Key, item.Value);
-            }
-            foreach (var item in _vertexNormalVectors)
-            {
-                _effectiveVertexNormalVectors.Add(item.Key, item.Value);
-            }
+                X = T.X * N_surf.X + B.X * N_surf.Y + N_map.X * N_surf.Z,
+                Y = T.Y * N_surf.X + B.Y * N_surf.Y + N_map.Y * N_surf.Z,
+                Z = T.Z * N_surf.X + B.Z * N_surf.Y + N_map.Z * N_surf.Z
+            });
         }
     }
 }

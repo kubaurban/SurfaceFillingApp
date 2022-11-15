@@ -19,6 +19,38 @@ namespace Views
         private double _animationAngle;
         private double _animationStep;
         private Graphics Graphics => Graphics.FromImage(_drawArea);
+        private int R
+        {
+            get => _r;
+            set
+            {
+                _r = value;
+                r_label.Text = $"R: {value}";
+            }
+        }
+
+
+        public event EventHandler KdChanged;
+        public event EventHandler KsChanged;
+        public event EventHandler MChanged;
+
+        public event EventHandler IlluminationColorChanged;
+        public event EventHandler LightPositionChanged;
+
+        public event EventHandler FillingMethodChanged;
+        public event EventHandler<Color> ObjectColorChanged;
+        public event EventHandler<string> TextureChanged;
+
+        public event EventHandler InterpolationMethodChanged;
+
+        public event EventHandler DrawMeshChanged;
+
+        public event EventHandler<string> NormalMapChanged;
+        public event EventHandler<bool> ModifyWithNormalMapChanged;
+
+        public Form Form => this;
+        public Size CanvasSize => new(_drawArea.Width, _drawArea.Height);
+        public FastBitmap FastDrawArea { get; }
 
         public float Kd
         {
@@ -31,7 +63,7 @@ namespace Views
         }
         public float Ks
         {
-            get => _ks; 
+            get => _ks;
             private set
             {
                 _ks = value;
@@ -40,7 +72,7 @@ namespace Views
         }
         public int M
         {
-            get => _m; 
+            get => _m;
             private set
             {
                 _m = value;
@@ -49,49 +81,21 @@ namespace Views
         }
         public int Z
         {
-            get => (int)LightPosition.Z; 
+            get => (int)LightPosition.Z;
             private set
             {
                 LightPosition = new(LightPosition.X, LightPosition.Y, value);
                 z_label.Text = $"z: {value}";
             }
         }
-
-        public event EventHandler KdChanged;
-        public event EventHandler KsChanged;
-        public event EventHandler MChanged;
-
-        public event EventHandler<Color> IlluminationColorChanged;
-        public event EventHandler<Vector3> LightSourceChanged;
-
-        public event EventHandler<FillingMethod> FillingMethodChanged;
-        public event EventHandler<Color> ObjectColorChanged;
-        public event EventHandler<string> TextureChanged;
-
-        public event EventHandler<InterpolationMethod> InterpolationMethodChanged;
-
-        public event EventHandler<bool> DrawMeshChanged;
-
-        public event EventHandler<string> NormalMapChanged;
-        public event EventHandler<bool> ModifyWithNormalMapChanged;
-
-        public Form Form => this;
-        public Size CanvasSize => new(_drawArea.Width, _drawArea.Height);
-        public FastBitmap FastDrawArea { get; }
+        public bool DrawMesh => DrawMeshCheckbox.Checked;
         /// <summary>
         /// Set in normal coordinates (not WinForms)
         /// </summary>
         public Vector3 LightPosition { get; private set; }
-        private int R
-        {
-            get => _r;
-            set
-            {
-                _r = value;
-                r_label.Text = $"R: {value}";
-            }
-        }
-        public bool NormalMapModification => NormalMapCheckBox.Checked;
+        public Color IlluminationColor { get; private set; }
+        public FillingMethod FillingMethod { get; private set; }
+        public InterpolationMethod InterpolationMethod { get; private set; }
 
         public Visualizer()
         {
@@ -113,7 +117,7 @@ namespace Views
         private void InitDefaultState()
         {
             _isAnimation = false;
-            _animationTimer.Interval = 10;
+            _animationTimer.Interval = 100;
             _animationAngle = Math.PI;
             _animationStep = Math.PI / 8;
 
@@ -131,8 +135,8 @@ namespace Views
             M = mTrackBar.Value;
             Z = zTrackBar.Value;
             R = rTrackBar.Value;
-
             LightPosition = new(CanvasSize.Width / 2 - R, CanvasSize.Height / 2, Z);
+            IlluminationColor = Color.White;
         }
 
         #region Drawing functions
@@ -178,32 +182,33 @@ namespace Views
         private void OnZChanged(object sender, EventArgs e)
         {
             Z = zTrackBar.Value;
-            LightSourceChanged?.Invoke(sender, LightPosition);
+            LightPositionChanged?.Invoke(sender, e);
         }
 
         private void OnRChanged(object sender, EventArgs e) => R = rTrackBar.Value;
 
         private void OnInterpolationMethodChanged(object sender, EventArgs e)
         {
-            InterpolationMethodChanged?.Invoke(sender, ColorInterpolationButton.Checked ? InterpolationMethod.Color : InterpolationMethod.Vector);
+            InterpolationMethod = ColorInterpolationButton.Checked ? InterpolationMethod.Color : InterpolationMethod.Vector;
+            InterpolationMethodChanged?.Invoke(sender, e);
         }
 
         private void OnFillingMethodChanged(object sender, EventArgs e)
         {
-            var filling = FillingMethod.SolidColor;
             if (SolidColorButton.Checked)
             {
+                FillingMethod = FillingMethod.SolidColor;
                 ChangeColorButton.Enabled = true;
                 ChangeTextureButton.Enabled = false;
             }
             else
             {
-                filling = FillingMethod.Texture;
+                FillingMethod = FillingMethod.Texture;
                 ChangeColorButton.Enabled = false;
                 ChangeTextureButton.Enabled = true;
             }
 
-            FillingMethodChanged?.Invoke(sender, filling);
+            FillingMethodChanged?.Invoke(sender, e);
         }
 
         private void OnAnimationButtonClick(object sender, EventArgs e)
@@ -225,7 +230,8 @@ namespace Views
         {
             if (ColorDialog.ShowDialog() == DialogResult.OK)
             {
-                IlluminationColorChanged?.Invoke(sender, ColorDialog.Color);
+                IlluminationColor = ColorDialog.Color;
+                IlluminationColorChanged?.Invoke(sender, e);
             }
         }
 
@@ -237,20 +243,6 @@ namespace Views
             }
         }
 
-        private void OnTimerTick(object sender, EventArgs e)
-        {
-            _animationAngle += _animationStep;
-            _animationAngle %= 2 * Math.PI;
-
-            LightPosition = new(
-                R * (float)Math.Cos(_animationAngle) + CanvasSize.Width / 2,
-                R * (float)Math.Sin(_animationAngle) + CanvasSize.Height / 2,
-                LightPosition.Z
-            );
-
-            LightSourceChanged?.Invoke(sender, LightPosition);
-        }
-
         private void OnChangeTextureButtonClick(object sender, EventArgs e)
         {
             if (ShowFileOpenDialog() == DialogResult.OK)
@@ -259,10 +251,7 @@ namespace Views
             }
         }
 
-        private void OnDrawMeshChanged(object sender, EventArgs e)
-        {
-            DrawMeshChanged?.Invoke(sender, DrawMeshCheckbox.Checked);
-        }
+        private void OnDrawMeshChanged(object sender, EventArgs e) => DrawMeshChanged?.Invoke(sender, e);
 
         private void OnModifyWithNormalMapChanged(object sender, EventArgs e)
         {
@@ -276,6 +265,21 @@ namespace Views
             {
                 NormalMapChanged?.Invoke(sender, OpenFileDialog.FileName);
             }
+        }
+
+        private void OnTimerTick(object sender, EventArgs e)
+        {
+            _animationAngle += _animationStep;
+            _animationAngle %= 2 * Math.PI;
+
+            LightPosition = new()
+            {
+                X = R * (float)Math.Cos(_animationAngle) + CanvasSize.Width / 2,
+                Y = R * (float)Math.Sin(_animationAngle) + CanvasSize.Height / 2,
+                Z = LightPosition.Z
+            };
+
+            LightPositionChanged?.Invoke(sender, e);
         }
 
         private DialogResult ShowFileOpenDialog()

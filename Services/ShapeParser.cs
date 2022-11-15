@@ -27,7 +27,6 @@ namespace Services
             var faces = result.Groups.First().Faces;
             var edgeDictionary = new HashSet<Edge>(new EdgeComparator());
 
-
             foreach (var f in faces)
             {
                 var edges = new List<Edge>();
