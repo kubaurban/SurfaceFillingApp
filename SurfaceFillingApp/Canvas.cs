@@ -67,6 +67,7 @@ namespace SurfaceFillingApp
             _visualizer.LightSourceChanged += HandleLightSourceChange;
             _visualizer.FillingMethodChanged += HandleFillingMethodChange;
             _visualizer.InterpolationMethodChanged += HandleInterpolationMethodChange;
+            _visualizer.TextureChanged += HandleTextureChange;
         }
 
 

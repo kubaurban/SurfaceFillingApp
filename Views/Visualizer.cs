@@ -8,11 +8,15 @@ namespace Views
 {
     public partial class Visualizer : Form, IVisualizer
     {
+        private readonly Bitmap _drawArea;
+        private Graphics _graphics;
+        private readonly Color _defaultColor;
         private bool _isAnimation;
         private float _kd;
         private float _ks;
         private int _m;
         private int _r;
+        private readonly Timer _animationTimer;
         private double _animationAngle;
         private double _animationStep;
 
@@ -56,19 +60,24 @@ namespace Views
         public event EventHandler KdChanged;
         public event EventHandler KsChanged;
         public event EventHandler MChanged;
+
         public event EventHandler<Color> IlluminationColorChanged;
-        public event EventHandler<Color> ObjectColorChanged;
         public event EventHandler<Vector3> LightSourceChanged;
-        public event EventHandler FillingMethodChanged;
-        public event EventHandler InterpolationMethodChanged;
+
+        public event EventHandler<FillingMethod> FillingMethodChanged;
+        public event EventHandler<Color> ObjectColorChanged;
+        public event EventHandler<string> TextureChanged;
+
+        public event EventHandler<InterpolationMethod> InterpolationMethodChanged;
+
+        public event EventHandler<bool> DrawMeshChanged;
+
+        public event EventHandler<string> NormalMapChanged;
+        public event EventHandler<bool> ModifyWithNormalMapChanged;
 
         public Form Form => this;
-        public Size CanvasSize => new(DrawArea.Width, DrawArea.Height);
-        private Bitmap DrawArea { get; }
-        private FastBitmap FastDrawArea { get; }
-        private Graphics Graphics => Graphics.FromImage(DrawArea);
-        private Color DefaultColor { get; }
-        private Timer AnimationTimer { get; }
+        public Size CanvasSize => new(_drawArea.Width, _drawArea.Height);
+        public FastBitmap FastDrawArea { get; }
         /// <summary>
         /// Set in normal coordinates (not WinForms)
         /// </summary>
@@ -82,47 +91,37 @@ namespace Views
                 r_label.Text = $"R: {value}";
             }
         }
-        public bool Animation => _isAnimation;
-        public FillingMethod FillingMethod => SolidColorButton.Checked ? FillingMethod.SolidColor : FillingMethod.Texture;
-        public InterpolationMethod InterpolationMethod => ColorInterpolationButton.Checked ? InterpolationMethod.Color : InterpolationMethod.Vector;
         public bool NormalMapModification => NormalMapCheckBox.Checked;
 
         public Visualizer()
         {
             InitializeComponent();
 
-            DrawArea = new Bitmap(PictureBox.Width, PictureBox.Height);
-            FastDrawArea = new FastBitmap(DrawArea);
-            PictureBox.Image = DrawArea;
+            _drawArea = new Bitmap(PictureBox.Width, PictureBox.Height);
+            _graphics = Graphics.FromImage(_drawArea);
 
-            AnimationTimer = new Timer();
-            AnimationTimer.Tick += new EventHandler(Timer_Tick);
+            _animationTimer = new Timer();
+            _animationTimer.Tick += OnTimerTick;
 
-            DefaultColor = Color.Black;
+            _defaultColor = Color.Black;
+
+            FastDrawArea = new FastBitmap(_drawArea);
+            PictureBox.Image = _drawArea;
 
             InitDefaultState();
-
-            kdTrackBar.ValueChanged += OnKdChanged;
-            ksTrackBar.ValueChanged += OnKsChanged;
-            mTrackBar.ValueChanged += OnMChanged;
-            zTrackBar.ValueChanged += OnZChanged;
-            rTrackBar.ValueChanged += OnRChanged;
-
-            SolidColorButton.CheckedChanged += OnFillingMethodChanged;
-            ColorInterpolationButton.CheckedChanged += OnInterpolationMethodChanged;
         }
 
         private void InitDefaultState()
         {
             _isAnimation = false;
+            _animationTimer.Interval = 10;
             _animationAngle = Math.PI;
             _animationStep = Math.PI / 8;
+            R = 125;
 
             SolidColorButton.Checked = true;
             ColorInterpolationButton.Checked = true;
 
-            R = 125;
-            AnimationTimer.Interval = 100;
             LightPosition = new(CanvasSize.Width / 2 - R, CanvasSize.Height / 2, 0);
 
             kdTrackBar.Value = kdTrackBar.Maximum / 2;
@@ -147,13 +146,13 @@ namespace Views
 
         public void DrawLine(PointF p1, PointF p2, Color? color = null)
         {
-            using var g = Graphics;
-            g.DrawLine(new(color ?? DefaultColor), p1.X, CanvasSize.Height - p1.Y, p2.X, CanvasSize.Height - p2.Y);
+            using var g = _graphics;
+            g.DrawLine(new(color ?? _defaultColor), p1.X, CanvasSize.Height - p1.Y, p2.X, CanvasSize.Height - p2.Y);
         }
 
         public void ClearArea()
         {
-            using var g = Graphics;
+            using var g = _graphics;
             g.Clear(Color.White);
         }
 
@@ -188,49 +187,63 @@ namespace Views
             LightSourceChanged?.Invoke(sender, LightPosition);
         }
 
-        private void OnRChanged(object sender, EventArgs e)
-        {
-            R = rTrackBar.Value * 200 / rTrackBar.Maximum + 50;
-        }
+        private void OnRChanged(object sender, EventArgs e) => R = (rTrackBar.Value * 200 / rTrackBar.Maximum) + 50;
 
         private void OnInterpolationMethodChanged(object sender, EventArgs e)
         {
-            InterpolationMethodChanged?.Invoke(sender, e);
+            InterpolationMethodChanged?.Invoke(sender, ColorInterpolationButton.Checked ? InterpolationMethod.Color : InterpolationMethod.Vector);
         }
 
         private void OnFillingMethodChanged(object sender, EventArgs e)
         {
-            FillingMethodChanged?.Invoke(sender, e);
+            var filling = FillingMethod.SolidColor;
+            if (SolidColorButton.Checked)
+            {
+                ChangeColorButton.Enabled = true;
+                ChangeTextureButton.Enabled = false;
+        }
+            else
+            {
+                filling = FillingMethod.Texture;
+                ChangeColorButton.Enabled = false;
+                ChangeTextureButton.Enabled = true;
+            }
+
+            FillingMethodChanged?.Invoke(sender, filling);
         }
 
-        private void AnimationButton_Click(object sender, EventArgs e)
+        private void OnAnimationButtonClick(object sender, EventArgs e)
         {
             if (_isAnimation)
             {
+                _animationTimer.Stop();
                 AnimationButton.Text = "Enable";
-                AnimationTimer.Stop();
             }
             else
             {
-                AnimationTimer.Start();
+                _animationTimer.Start();
                 AnimationButton.Text = "Disable";
             }
             _isAnimation = !_isAnimation;
         }
 
-        private void ChangeIlluminationColorButton_Click(object sender, EventArgs e)
+        private void OnChangeIlluminationColorButtonClick(object sender, EventArgs e)
         {
-            ColorDialog.ShowDialog();
+            if (ColorDialog.ShowDialog() == DialogResult.OK)
+            {
             IlluminationColorChanged?.Invoke(sender, ColorDialog.Color);
         }
-
-        private void ChangeColorButton_Click(object sender, EventArgs e)
-        {
-            ColorDialog.ShowDialog();
-            ObjectColorChanged?.Invoke(sender, ColorDialog.Color);
         }
 
-        private void Timer_Tick(object sender, EventArgs e)
+        private void OnChangeColorButtonClick(object sender, EventArgs e)
+        {
+            if (ColorDialog.ShowDialog() == DialogResult.OK)
+            {
+            ObjectColorChanged?.Invoke(sender, ColorDialog.Color);
+        }
+        }
+
+        private void OnTimerTick(object sender, EventArgs e)
         {
             _animationAngle += _animationStep;
             _animationAngle %= 2 * Math.PI;
@@ -242,6 +255,22 @@ namespace Views
             );
 
             LightSourceChanged?.Invoke(sender, LightPosition);
+        }
+
+        private void OnChangeTextureButtonClick(object sender, EventArgs e)
+        {
+            if (ShowFileOpenDialog() == DialogResult.OK)
+            {
+                TextureChanged?.Invoke(sender, OpenFileDialog.FileName);
+            }
+        }
+
+        private DialogResult ShowFileOpenDialog()
+        {
+            var path = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName;
+            OpenFileDialog.InitialDirectory = @path;
+            OpenFileDialog.Filter = "Image Files (*.bmp, *.jpg, *.png) | *.bmp;*.jpg;*.png";
+            return OpenFileDialog.ShowDialog();
         }
         #endregion
     }

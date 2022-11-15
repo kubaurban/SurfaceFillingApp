@@ -142,6 +142,7 @@
             this.zTrackBar.Name = "zTrackBar";
             this.zTrackBar.Size = new System.Drawing.Size(159, 45);
             this.zTrackBar.TabIndex = 3;
+            this.zTrackBar.ValueChanged += new System.EventHandler(this.OnZChanged);
             // 
             // kd_label
             // 
@@ -160,6 +161,7 @@
             this.mTrackBar.Name = "mTrackBar";
             this.mTrackBar.Size = new System.Drawing.Size(242, 45);
             this.mTrackBar.TabIndex = 2;
+            this.mTrackBar.ValueChanged += new System.EventHandler(this.OnMChanged);
             // 
             // ksTrackBar
             // 
@@ -169,6 +171,7 @@
             this.ksTrackBar.Name = "ksTrackBar";
             this.ksTrackBar.Size = new System.Drawing.Size(242, 45);
             this.ksTrackBar.TabIndex = 1;
+            this.ksTrackBar.ValueChanged += new System.EventHandler(this.OnKsChanged);
             // 
             // kdTrackBar
             // 
@@ -178,6 +181,7 @@
             this.kdTrackBar.Name = "kdTrackBar";
             this.kdTrackBar.Size = new System.Drawing.Size(242, 45);
             this.kdTrackBar.TabIndex = 0;
+            this.kdTrackBar.ValueChanged += new System.EventHandler(this.OnKdChanged);
             // 
             // r_label
             // 
@@ -195,6 +199,7 @@
             this.rTrackBar.Name = "rTrackBar";
             this.rTrackBar.Size = new System.Drawing.Size(159, 45);
             this.rTrackBar.TabIndex = 7;
+            this.rTrackBar.ValueChanged += new System.EventHandler(this.OnRChanged);
             // 
             // FillingBox
             // 
@@ -229,6 +234,7 @@
             this.SolidColorButton.TabStop = true;
             this.SolidColorButton.Text = "Solid color";
             this.SolidColorButton.UseVisualStyleBackColor = true;
+            this.SolidColorButton.CheckedChanged += new System.EventHandler(this.OnFillingMethodChanged);
             // 
             // splitContainer1
             // 
@@ -251,21 +257,23 @@
             this.ChangeColorButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.ChangeColorButton.Location = new System.Drawing.Point(5, 8);
             this.ChangeColorButton.Name = "ChangeColorButton";
-            this.ChangeColorButton.Size = new System.Drawing.Size(117, 31);
+            this.ChangeColorButton.Size = new System.Drawing.Size(116, 31);
             this.ChangeColorButton.TabIndex = 1;
             this.ChangeColorButton.Text = "Change color";
             this.ChangeColorButton.UseVisualStyleBackColor = true;
-            this.ChangeColorButton.Click += new System.EventHandler(this.ChangeColorButton_Click);
+            this.ChangeColorButton.Click += new System.EventHandler(this.OnChangeColorButtonClick);
             // 
             // ChangeTextureButton
             // 
             this.ChangeTextureButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.ChangeTextureButton.Location = new System.Drawing.Point(3, 8);
+            this.ChangeTextureButton.Enabled = false;
+            this.ChangeTextureButton.Location = new System.Drawing.Point(4, 8);
             this.ChangeTextureButton.Name = "ChangeTextureButton";
             this.ChangeTextureButton.Size = new System.Drawing.Size(113, 31);
             this.ChangeTextureButton.TabIndex = 2;
             this.ChangeTextureButton.Text = "Change texture";
             this.ChangeTextureButton.UseVisualStyleBackColor = true;
+            this.ChangeTextureButton.Click += new System.EventHandler(this.OnChangeTextureButtonClick);
             // 
             // AnimationBox
             // 
@@ -287,7 +295,7 @@
             this.AnimationButton.TabIndex = 0;
             this.AnimationButton.Text = "Enable";
             this.AnimationButton.UseVisualStyleBackColor = true;
-            this.AnimationButton.Click += new System.EventHandler(this.AnimationButton_Click);
+            this.AnimationButton.Click += new System.EventHandler(this.OnAnimationButtonClick);
             // 
             // NormalMap
             // 
