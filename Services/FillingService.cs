@@ -179,8 +179,8 @@ namespace Services
                     var nv = Interpolate(N(vertices[0]), N(vertices[1]), N(vertices[2]), coeffs);
                     var lv = Interpolate(L(vertices[0]), L(vertices[1]), L(vertices[2]), coeffs);
                     return LambertColor(x, y, Vector3.Normalize(nv), Vector3.Normalize(lv)).ToColor();
+                }
             }
-        }
         }
 
         public Vector3 Io(int x, int y) => Filler.GetPixelColorVector(x, _visualizer.CanvasSize.Height - y);
@@ -206,21 +206,21 @@ namespace Services
             return Io(x, y) * Il * (Kd * cos_1 + Ks * (float)Math.Pow(cos_2, M));
         }
 
-        private (float u, float v, float w) InterpolationCoefficients(int x, int y, Face face) // vertices interpolation
+        private static (float u, float v, float w) InterpolationCoefficients(int x, int y, Face face)
         {
             var faceVertices = face.Vertices;
-            var P = TriangleArea(faceVertices);
             var P0 = TriangleArea(new() { new(x, y), faceVertices[1], faceVertices[2] });
             var P1 = TriangleArea(new() { new(x, y), faceVertices[0], faceVertices[2] });
             var P2 = TriangleArea(new() { new(x, y), faceVertices[0], faceVertices[1] });
+            var P = P0 + P1 + P2;
 
             return new(P0 / P, P1 / P, P2 / P);
         }
 
-        private Vector3 Interpolate(Vector3 A, Vector3 B, Vector3 C, (float u, float v, float w) coeff)
+        private static Vector3 Interpolate(Vector3 A, Vector3 B, Vector3 C, (float u, float v, float w) coeff)
             => coeff.u * A + coeff.v * B + coeff.w * C;
 
-        private float TriangleArea(List<Vertex> vertices)
+        private static float TriangleArea(List<Vertex> vertices)
         {
             var a = new Edge(vertices[0], vertices[1]);
             var b = new Edge(vertices[0], vertices[2]);
@@ -228,7 +228,7 @@ namespace Services
             return Vector3.Cross(a.AsVector2D, b.AsVector2D).Length() / 2;
         }
 
-        private Vector3 N(Vertex v) => Vector3.Normalize(v.NormalVector);
+        private static Vector3 N(Vertex v) => Vector3.Normalize(v.NormalVector);
         private Vector3 L(Vertex v) => Vector3.Normalize(new(LightSource.X - v.X, LightSource.Y - v.Y, LightSource.Z - v.Z));
     }
 }
