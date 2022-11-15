@@ -142,9 +142,12 @@
             // zTrackBar
             // 
             this.zTrackBar.Location = new System.Drawing.Point(89, 148);
+            this.zTrackBar.Maximum = 1000;
+            this.zTrackBar.Minimum = 50;
             this.zTrackBar.Name = "zTrackBar";
             this.zTrackBar.Size = new System.Drawing.Size(159, 45);
             this.zTrackBar.TabIndex = 3;
+            this.zTrackBar.Value = 200;
             this.zTrackBar.ValueChanged += new System.EventHandler(this.OnZChanged);
             // 
             // kd_label
@@ -160,17 +163,19 @@
             // 
             this.mTrackBar.LargeChange = 4;
             this.mTrackBar.Location = new System.Drawing.Point(6, 102);
-            this.mTrackBar.Maximum = 20;
+            this.mTrackBar.Maximum = 100;
+            this.mTrackBar.Minimum = 1;
             this.mTrackBar.Name = "mTrackBar";
             this.mTrackBar.Size = new System.Drawing.Size(242, 45);
             this.mTrackBar.TabIndex = 2;
+            this.mTrackBar.Value = 1;
             this.mTrackBar.ValueChanged += new System.EventHandler(this.OnMChanged);
             // 
             // ksTrackBar
             // 
             this.ksTrackBar.LargeChange = 4;
             this.ksTrackBar.Location = new System.Drawing.Point(6, 59);
-            this.ksTrackBar.Maximum = 20;
+            this.ksTrackBar.Maximum = 100;
             this.ksTrackBar.Name = "ksTrackBar";
             this.ksTrackBar.Size = new System.Drawing.Size(242, 45);
             this.ksTrackBar.TabIndex = 1;
@@ -180,7 +185,7 @@
             // 
             this.kdTrackBar.LargeChange = 4;
             this.kdTrackBar.Location = new System.Drawing.Point(6, 17);
-            this.kdTrackBar.Maximum = 20;
+            this.kdTrackBar.Maximum = 100;
             this.kdTrackBar.Name = "kdTrackBar";
             this.kdTrackBar.Size = new System.Drawing.Size(242, 45);
             this.kdTrackBar.TabIndex = 0;
@@ -198,10 +203,12 @@
             // rTrackBar
             // 
             this.rTrackBar.Location = new System.Drawing.Point(89, 16);
-            this.rTrackBar.Maximum = 8;
+            this.rTrackBar.Maximum = 500;
+            this.rTrackBar.Minimum = 25;
             this.rTrackBar.Name = "rTrackBar";
             this.rTrackBar.Size = new System.Drawing.Size(159, 45);
             this.rTrackBar.TabIndex = 7;
+            this.rTrackBar.Value = 25;
             this.rTrackBar.ValueChanged += new System.EventHandler(this.OnRChanged);
             // 
             // FillingBox

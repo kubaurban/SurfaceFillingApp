@@ -116,23 +116,23 @@ namespace Views
             _animationTimer.Interval = 10;
             _animationAngle = Math.PI;
             _animationStep = Math.PI / 8;
-            R = 125;
 
             SolidColorButton.Checked = true;
             ColorInterpolationButton.Checked = true;
 
-            LightPosition = new(CanvasSize.Width / 2 - R, CanvasSize.Height / 2, 0);
-
-            kdTrackBar.Value = kdTrackBar.Maximum / 2;
-            ksTrackBar.Value = ksTrackBar.Maximum / 2;
-            mTrackBar.Value = mTrackBar.Maximum / 2;
-            zTrackBar.Value = zTrackBar.Maximum / 2;
-            rTrackBar.Value = (R - 50) * rTrackBar.Maximum / 200;
+            kdTrackBar.Value = (kdTrackBar.Maximum + kdTrackBar.Minimum) / 2;
+            ksTrackBar.Value = (ksTrackBar.Maximum + ksTrackBar.Minimum) / 2;
+            mTrackBar.Value = (mTrackBar.Maximum + mTrackBar.Minimum) / 2;
+            zTrackBar.Value = (zTrackBar.Maximum + zTrackBar.Minimum) / 2;
+            rTrackBar.Value = 125;
 
             Kd = (float)kdTrackBar.Value / kdTrackBar.Maximum;
             Ks = (float)ksTrackBar.Value / ksTrackBar.Maximum;
-            M = mTrackBar.Value * 100 / mTrackBar.Maximum;
-            Z = zTrackBar.Value * 400 / zTrackBar.Maximum + 300;
+            M = mTrackBar.Value;
+            Z = zTrackBar.Value;
+            R = rTrackBar.Value;
+
+            LightPosition = new(CanvasSize.Width / 2 - R, CanvasSize.Height / 2, Z);
         }
 
         #region Drawing functions
@@ -171,17 +171,17 @@ namespace Views
 
         private void OnMChanged(object sender, EventArgs e)
         {
-            M = mTrackBar.Value * 100 / mTrackBar.Maximum;
+            M = mTrackBar.Value;
             MChanged?.Invoke(sender, e);
         }
 
         private void OnZChanged(object sender, EventArgs e)
         {
-            Z = zTrackBar.Value * 400 / zTrackBar.Maximum + 300;
+            Z = zTrackBar.Value;
             LightSourceChanged?.Invoke(sender, LightPosition);
         }
 
-        private void OnRChanged(object sender, EventArgs e) => R = (rTrackBar.Value * 200 / rTrackBar.Maximum) + 50;
+        private void OnRChanged(object sender, EventArgs e) => R = rTrackBar.Value;
 
         private void OnInterpolationMethodChanged(object sender, EventArgs e)
         {
