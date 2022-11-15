@@ -1,3 +1,4 @@
+﻿using FastBitmapLib;
 ﻿using System.Numerics;
 using Views.Enums;
 
@@ -25,6 +26,7 @@ namespace Views.Abstract
 
         Form Form { get; }
         Size CanvasSize { get; }
+        FastBitmap FastDrawArea { get; }
 
         float Kd { get; }
         float Ks { get; }

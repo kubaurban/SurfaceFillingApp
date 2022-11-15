@@ -123,6 +123,7 @@ namespace Services
 
                 AET.RemoveAll(x => y_cur == (int)Math.Round(x.Ymax));
 
+                _visualizer.FastDrawArea.Lock();
                 for (int i = 0; i < AET.Count / 2; i++)
                 {
                     for (int j = (int)AET[2 * i].X; j < AET[2 * i + 1].X; j++)
@@ -130,6 +131,7 @@ namespace Services
                         _visualizer.SetPixel(j, y_cur, GetPixelColor(j, y_cur, face));
                     }
                 }
+                _visualizer.FastDrawArea.Unlock();
 
                 foreach (var node in AET)
                 {

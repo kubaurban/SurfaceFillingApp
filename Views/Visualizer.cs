@@ -137,12 +137,7 @@ namespace Views
         }
 
         #region Drawing functions
-        public void SetPixel(int x, int y, Color color)
-        {
-            FastDrawArea.Lock();
-            FastDrawArea.SetPixel(x, CanvasSize.Height - y, color);
-            FastDrawArea.Unlock();
-        }
+        public void SetPixel(int x, int y, Color color) => FastDrawArea.SetPixel(x, CanvasSize.Height - y, color);
 
         public void DrawLine(PointF p1, PointF p2, Color? color = null)
         {
