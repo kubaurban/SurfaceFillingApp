@@ -166,8 +166,21 @@ namespace Services
             }
             else
             {
-                return Color.Black;
+                if (Interpolation == InterpolationMethod.Color)
+                {
+                    var c0 = LambertColor((int)vertices[0].X, (int)vertices[0].Y, N(vertices[0]), L(vertices[0]));
+                    var c1 = LambertColor((int)vertices[1].X, (int)vertices[1].Y, N(vertices[1]), L(vertices[1]));
+                    var c2 = LambertColor((int)vertices[2].X, (int)vertices[2].Y, N(vertices[2]), L(vertices[2]));
+                    return Interpolate(c0, c1, c2, InterpolationCoefficients(x, y, face)).ToColor();
+                }
+                else
+                {
+                    var coeffs = InterpolationCoefficients(x, y, face);
+                    var nv = Interpolate(N(vertices[0]), N(vertices[1]), N(vertices[2]), coeffs);
+                    var lv = Interpolate(L(vertices[0]), L(vertices[1]), L(vertices[2]), coeffs);
+                    return LambertColor(x, y, Vector3.Normalize(nv), Vector3.Normalize(lv)).ToColor();
             }
+        }
         }
 
         public Vector3 Io(int x, int y) => Filler.GetPixelColorVector(x, _visualizer.CanvasSize.Height - y);
