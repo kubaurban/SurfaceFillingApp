@@ -43,7 +43,7 @@
             this.rTrackBar = new System.Windows.Forms.TrackBar();
             this.FillingBox = new System.Windows.Forms.GroupBox();
             this.TextureRadioButton = new System.Windows.Forms.RadioButton();
-            this.SolidColorButton = new System.Windows.Forms.RadioButton();
+            this.SolidColorRadioButton = new System.Windows.Forms.RadioButton();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.ChangeColorButton = new System.Windows.Forms.Button();
             this.ChangeTextureButton = new System.Windows.Forms.Button();
@@ -56,8 +56,11 @@
             this.VectorInterpolationButton = new System.Windows.Forms.RadioButton();
             this.ColorInterpolationButton = new System.Windows.Forms.RadioButton();
             this.ColorDialog = new System.Windows.Forms.ColorDialog();
-            this.OpenFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.OpenImageDialog = new System.Windows.Forms.OpenFileDialog();
             this.DrawMeshCheckbox = new System.Windows.Forms.CheckBox();
+            this.LoadSurfaceButton = new System.Windows.Forms.Button();
+            this.LoadedSurfaceLabel = new System.Windows.Forms.Label();
+            this.OpenObjDialog = new System.Windows.Forms.OpenFileDialog();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBox)).BeginInit();
             this.IlluminationBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.zTrackBar)).BeginInit();
@@ -213,7 +216,7 @@
             // FillingBox
             // 
             this.FillingBox.Controls.Add(this.TextureRadioButton);
-            this.FillingBox.Controls.Add(this.SolidColorButton);
+            this.FillingBox.Controls.Add(this.SolidColorRadioButton);
             this.FillingBox.Controls.Add(this.splitContainer1);
             this.FillingBox.Location = new System.Drawing.Point(518, 293);
             this.FillingBox.Name = "FillingBox";
@@ -233,17 +236,17 @@
             this.TextureRadioButton.Text = "Texture";
             this.TextureRadioButton.UseVisualStyleBackColor = true;
             // 
-            // SolidColorButton
+            // SolidColorRadioButton
             // 
-            this.SolidColorButton.AutoSize = true;
-            this.SolidColorButton.Location = new System.Drawing.Point(26, 21);
-            this.SolidColorButton.Name = "SolidColorButton";
-            this.SolidColorButton.Size = new System.Drawing.Size(81, 19);
-            this.SolidColorButton.TabIndex = 0;
-            this.SolidColorButton.TabStop = true;
-            this.SolidColorButton.Text = "Solid color";
-            this.SolidColorButton.UseVisualStyleBackColor = true;
-            this.SolidColorButton.CheckedChanged += new System.EventHandler(this.OnFillingMethodChanged);
+            this.SolidColorRadioButton.AutoSize = true;
+            this.SolidColorRadioButton.Location = new System.Drawing.Point(26, 21);
+            this.SolidColorRadioButton.Name = "SolidColorRadioButton";
+            this.SolidColorRadioButton.Size = new System.Drawing.Size(81, 19);
+            this.SolidColorRadioButton.TabIndex = 0;
+            this.SolidColorRadioButton.TabStop = true;
+            this.SolidColorRadioButton.Text = "Solid color";
+            this.SolidColorRadioButton.UseVisualStyleBackColor = true;
+            this.SolidColorRadioButton.CheckedChanged += new System.EventHandler(this.OnFillingMethodChanged);
             // 
             // splitContainer1
             // 
@@ -354,7 +357,7 @@
             // VectorInterpolationButton
             // 
             this.VectorInterpolationButton.AutoSize = true;
-            this.VectorInterpolationButton.Location = new System.Drawing.Point(121, 23);
+            this.VectorInterpolationButton.Location = new System.Drawing.Point(26, 22);
             this.VectorInterpolationButton.Name = "VectorInterpolationButton";
             this.VectorInterpolationButton.Size = new System.Drawing.Size(101, 19);
             this.VectorInterpolationButton.TabIndex = 1;
@@ -365,7 +368,7 @@
             // ColorInterpolationButton
             // 
             this.ColorInterpolationButton.AutoSize = true;
-            this.ColorInterpolationButton.Location = new System.Drawing.Point(26, 23);
+            this.ColorInterpolationButton.Location = new System.Drawing.Point(159, 22);
             this.ColorInterpolationButton.Name = "ColorInterpolationButton";
             this.ColorInterpolationButton.Size = new System.Drawing.Size(54, 19);
             this.ColorInterpolationButton.TabIndex = 0;
@@ -374,9 +377,9 @@
             this.ColorInterpolationButton.UseVisualStyleBackColor = true;
             this.ColorInterpolationButton.CheckedChanged += new System.EventHandler(this.OnInterpolationMethodChanged);
             // 
-            // OpenFileDialog
+            // OpenImageDialog
             // 
-            this.OpenFileDialog.InitialDirectory = "../../../..";
+            this.OpenImageDialog.InitialDirectory = "../../../..";
             // 
             // DrawMeshCheckbox
             // 
@@ -389,11 +392,32 @@
             this.DrawMeshCheckbox.UseVisualStyleBackColor = true;
             this.DrawMeshCheckbox.CheckedChanged += new System.EventHandler(this.OnDrawMeshChanged);
             // 
+            // LoadSurfaceButton
+            // 
+            this.LoadSurfaceButton.Location = new System.Drawing.Point(12, 8);
+            this.LoadSurfaceButton.Name = "LoadSurfaceButton";
+            this.LoadSurfaceButton.Size = new System.Drawing.Size(126, 23);
+            this.LoadSurfaceButton.TabIndex = 7;
+            this.LoadSurfaceButton.Text = "Load surface";
+            this.LoadSurfaceButton.UseVisualStyleBackColor = true;
+            this.LoadSurfaceButton.Click += new System.EventHandler(this.OnLoadSurfaceButtonClick);
+            // 
+            // LoadedSurfaceLabel
+            // 
+            this.LoadedSurfaceLabel.AutoSize = true;
+            this.LoadedSurfaceLabel.Location = new System.Drawing.Point(144, 12);
+            this.LoadedSurfaceLabel.Name = "LoadedSurfaceLabel";
+            this.LoadedSurfaceLabel.Size = new System.Drawing.Size(112, 15);
+            this.LoadedSurfaceLabel.TabIndex = 8;
+            this.LoadedSurfaceLabel.Text = "Loaded surface file: ";
+            // 
             // Visualizer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(784, 559);
+            this.Controls.Add(this.LoadedSurfaceLabel);
+            this.Controls.Add(this.LoadSurfaceButton);
             this.Controls.Add(this.DrawMeshCheckbox);
             this.Controls.Add(this.InterpolationBox);
             this.Controls.Add(this.NormalMap);
@@ -446,7 +470,7 @@
         private Button AnimationButton;
         private TrackBar zTrackBar;
         private RadioButton TextureRadioButton;
-        private RadioButton SolidColorButton;
+        private RadioButton SolidColorRadioButton;
         private SplitContainer splitContainer1;
         private Button ChangeColorButton;
         private Button ChangeTextureButton;
@@ -459,8 +483,11 @@
         private ColorDialog ColorDialog;
         private Label r_label;
         private TrackBar rTrackBar;
-        private OpenFileDialog OpenFileDialog;
+        private OpenFileDialog OpenImageDialog;
         private CheckBox DrawMeshCheckbox;
         private Button ChangeNormalMapButton;
+        private Button LoadSurfaceButton;
+        private Label LoadedSurfaceLabel;
+        private OpenFileDialog OpenObjDialog;
     }
 }

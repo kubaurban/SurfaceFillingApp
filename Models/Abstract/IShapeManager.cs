@@ -10,6 +10,7 @@ namespace Models.Abstract
         IEnumerable<Edge> GetDistinctEdges();
 
         void AddFace(Face face);
+        void RemoveAll();
         void ScaleSurface(int scale);
         void MoveSurface(Vector3 move);
     }

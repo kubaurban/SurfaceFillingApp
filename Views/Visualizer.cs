@@ -18,6 +18,8 @@ namespace Views
         private readonly Timer _animationTimer;
         private double _animationAngle;
         private double _animationStep;
+        private string _loadedSurfaceFilename;
+
         private Graphics Graphics => Graphics.FromImage(_drawArea);
         private int R
         {
@@ -47,6 +49,8 @@ namespace Views
 
         public event EventHandler<string> NormalMapChanged;
         public event EventHandler<bool> ModifyWithNormalMapChanged;
+
+        public event EventHandler<string> LoadedSurfaceFileChanged;
 
         public Form Form => this;
         public Size CanvasSize => new(_drawArea.Width, _drawArea.Height);
@@ -97,6 +101,16 @@ namespace Views
         public FillingMethod FillingMethod { get; private set; }
         public InterpolationMethod InterpolationMethod { get; private set; }
 
+        public string LoadedSurfaceFilename
+        {
+            get => "Loaded surface file: " + _loadedSurfaceFilename; 
+            set
+            {
+                _loadedSurfaceFilename = value;
+                LoadedSurfaceLabel.Text = LoadedSurfaceFilename;
+            }
+        }
+
         public Visualizer()
         {
             InitializeComponent();
@@ -107,6 +121,7 @@ namespace Views
             _animationTimer.Tick += OnTimerTick;
 
             _defaultColor = Color.Black;
+            _loadedSurfaceFilename = string.Empty;
 
             FastDrawArea = new FastBitmap(_drawArea);
             PictureBox.Image = _drawArea;
@@ -114,27 +129,41 @@ namespace Views
             InitDefaultState();
         }
 
-        private void InitDefaultState()
+        public void InitDefaultState()
         {
-            _isAnimation = false;
-            _animationTimer.Interval = 100;
-            _animationAngle = Math.PI;
-            _animationStep = Math.PI / 8;
-
-            SolidColorButton.Checked = true;
-            ColorInterpolationButton.Checked = true;
+            DrawMeshCheckbox.Checked = false;
 
             kdTrackBar.Value = (kdTrackBar.Maximum + kdTrackBar.Minimum) / 2;
             ksTrackBar.Value = (ksTrackBar.Maximum + ksTrackBar.Minimum) / 2;
             mTrackBar.Value = (mTrackBar.Maximum + mTrackBar.Minimum) / 2;
             zTrackBar.Value = (zTrackBar.Maximum + zTrackBar.Minimum) / 2;
-            rTrackBar.Value = 125;
+            rTrackBar.Value = 250;
 
-            Kd = (float)kdTrackBar.Value / kdTrackBar.Maximum;
-            Ks = (float)ksTrackBar.Value / ksTrackBar.Maximum;
+            _isAnimation = false;
+            _animationTimer.Interval = 100;
+            _animationAngle = Math.PI;
+            _animationStep = Math.PI / 8;
+            _animationTimer.Stop(); // for reload
+            AnimationButton.Text = "Enable";
+
+            SolidColorRadioButton.Checked = true;
+            TextureRadioButton.Checked = false;
+            ChangeColorButton.Enabled = true;
+
+            VectorInterpolationButton.Checked = true;
+            ColorInterpolationButton.Checked = false;
+            ChangeTextureButton.Enabled = false;
+
+            NormalMapCheckBox.Checked = false;
+            ChangeNormalMapButton.Enabled = false;
+
+            Kd = (float)kdTrackBar.Value / (kdTrackBar.Maximum + kdTrackBar.Minimum);
+            Ks = (float)ksTrackBar.Value / (kdTrackBar.Maximum + kdTrackBar.Minimum);
             M = mTrackBar.Value;
             Z = zTrackBar.Value;
             R = rTrackBar.Value;
+            FillingMethod = FillingMethod.SolidColor;
+            InterpolationMethod = InterpolationMethod.Vector;
             LightPosition = new(CanvasSize.Width / 2 - R, CanvasSize.Height / 2, Z);
             IlluminationColor = Color.White;
         }
@@ -195,7 +224,7 @@ namespace Views
 
         private void OnFillingMethodChanged(object sender, EventArgs e)
         {
-            if (SolidColorButton.Checked)
+            if (SolidColorRadioButton.Checked)
             {
                 FillingMethod = FillingMethod.SolidColor;
                 ChangeColorButton.Enabled = true;
@@ -245,9 +274,9 @@ namespace Views
 
         private void OnChangeTextureButtonClick(object sender, EventArgs e)
         {
-            if (ShowFileOpenDialog() == DialogResult.OK)
+            if (ShowOpenImageDialog() == DialogResult.OK)
             {
-                TextureChanged?.Invoke(sender, OpenFileDialog.FileName);
+                TextureChanged?.Invoke(sender, OpenImageDialog.FileName);
             }
         }
 
@@ -261,9 +290,18 @@ namespace Views
 
         private void OnChangeNormalMapButtonClick(object sender, EventArgs e)
         {
-            if (ShowFileOpenDialog() == DialogResult.OK)
+            if (ShowOpenImageDialog() == DialogResult.OK)
             {
-                NormalMapChanged?.Invoke(sender, OpenFileDialog.FileName);
+                NormalMapChanged?.Invoke(sender, OpenImageDialog.FileName);
+            }
+        }
+
+        private void OnLoadSurfaceButtonClick(object sender, EventArgs e)
+        {
+            if (ShowOpenObjDialog() == DialogResult.OK)
+            {
+                LoadedSurfaceFilename = Path.GetFileName(OpenObjDialog.FileName);
+                LoadedSurfaceFileChanged?.Invoke(sender, OpenObjDialog.FileName);
             }
         }
 
@@ -282,12 +320,20 @@ namespace Views
             LightPositionChanged?.Invoke(sender, e);
         }
 
-        private DialogResult ShowFileOpenDialog()
+        private DialogResult ShowOpenImageDialog()
         {
             var path = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName;
-            OpenFileDialog.InitialDirectory = @path;
-            OpenFileDialog.Filter = "Image Files (*.bmp, *.jpg, *.png) | *.bmp;*.jpg;*.png";
-            return OpenFileDialog.ShowDialog();
+            OpenImageDialog.InitialDirectory = @path;
+            OpenImageDialog.Filter = "Image Files (*.bmp, *.jpg, *.png) | *.bmp;*.jpg;*.png";
+            return OpenImageDialog.ShowDialog();
+        }
+
+        private DialogResult ShowOpenObjDialog()
+        {
+            var path = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName;
+            OpenObjDialog.InitialDirectory = @path;
+            OpenObjDialog.Filter = "Surface Files (*.obj) | *.obj";
+            return OpenObjDialog.ShowDialog();
         }
         #endregion
     }

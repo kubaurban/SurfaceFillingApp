@@ -19,6 +19,8 @@ namespace Models.Repository
             _faces.Add(face);
         }
 
+        public void RemoveAll() => _faces.Clear();
+
         public IEnumerable<Face> GetAllFaces() => _faces.AsEnumerable();
 
         public IEnumerable<Edge> GetDistinctEdges() => _faces.SelectMany(x => x.Edges).ToHashSet(new EdgeComparator());

@@ -10,9 +10,12 @@ namespace Services
     {
         private readonly IShapeManager _shapeManager;
 
+        public string LoadedFilename { get; private set; }
+
         public ShapeParser(IShapeManager shapeManager)
         {
             _shapeManager = shapeManager;
+            LoadedFilename = string.Empty;
         }
 
         /// <summary>
@@ -21,6 +24,8 @@ namespace Services
         /// <param name="path"></param>
         public void LoadObj(string path)
         {
+            LoadedFilename = Path.GetFileName(path);
+
             var objLoader = new ObjLoaderFactory().Create();
             var result = objLoader.Load(new FileStream(@path, FileMode.Open));
 

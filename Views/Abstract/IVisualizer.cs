@@ -24,6 +24,8 @@ namespace Views.Abstract
         event EventHandler<string> NormalMapChanged;
         event EventHandler<bool> ModifyWithNormalMapChanged;
 
+        event EventHandler<string> LoadedSurfaceFileChanged;
+
         Form Form { get; }
         Size CanvasSize { get; }
         FastBitmap FastDrawArea { get; }
@@ -39,6 +41,9 @@ namespace Views.Abstract
         FillingMethod FillingMethod { get; }
         InterpolationMethod InterpolationMethod { get; }
 
+        string LoadedSurfaceFilename { get; set; }
+
+        void InitDefaultState();
         void SetPixel(int x, int y, Color color);
         void DrawLine(PointF p1, PointF p2, Color? color = null);
         void ClearArea();

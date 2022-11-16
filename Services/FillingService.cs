@@ -97,6 +97,15 @@ namespace Services
             }
         }
 
+        public void FreeEagerlyLoadedData()
+        {
+            _interpolationCoeffs.Clear();
+            _vertexNormalVectors.Clear();
+            _effectiveVertexNormalVectors.Clear();
+            _interpNormalVectors.Clear();
+            _effectiveInterpNormalVectors.Clear();
+        }
+
         public void FillSurface()
         {
             foreach (var face in _shapeManager.GetAllFaces())

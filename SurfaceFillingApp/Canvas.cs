@@ -14,6 +14,7 @@ namespace SurfaceFillingApp
         private readonly IVisualizer _visualizer;
         private readonly IShapeManager _shapeManager;
         private readonly IFillingService _fillingService;
+        private readonly IShapeParser _shapeParser;
 
         private Color DefaultSolidColor { get; set; }
         private string DefaultTexturePath { get; set; }
@@ -23,13 +24,16 @@ namespace SurfaceFillingApp
 
         public Form GetForm() => _visualizer.Form;
 
-        public Canvas(IVisualizer visualizer, IShapeManager manager, IFillingService fillingService)
+        public Canvas(IVisualizer visualizer, IShapeManager manager, IFillingService fillingService, IShapeParser shapeParser)
         {
             _visualizer = visualizer;
             _shapeManager = manager;
             _fillingService = fillingService;
+            _shapeParser = shapeParser;
 
             InitVisualizerHandlers();
+
+            _visualizer.LoadedSurfaceFilename = _shapeParser.LoadedFilename;
 
             DefaultSolidColor = Color.SandyBrown;
             DefaultTexturePath = @"..\..\..\..\vader.jpg";
@@ -43,11 +47,7 @@ namespace SurfaceFillingApp
 
             _visualizer.ClearArea();
 
-            _fillingService.FillSurface();
-            if (DrawMesh)
-                DrawSurfaceMesh();
-
-            _visualizer.RefreshArea();
+            RefreshAll();
         }
 
         private void InitVisualizerHandlers()
@@ -64,6 +64,7 @@ namespace SurfaceFillingApp
             _visualizer.DrawMeshChanged += HandleFillingParameterChanged;
             _visualizer.NormalMapChanged += HandleNormalMapChanged;
             _visualizer.ModifyWithNormalMapChanged += HandleModifyWithNormalMapChanged;
+            _visualizer.LoadedSurfaceFileChanged += HandleLoadedSurfaceFileChanged;
         }
 
         #region View handlers
@@ -109,6 +110,22 @@ namespace SurfaceFillingApp
         private void HandleNormalMapChanged(object? sender, string e)
         {
             _fillingService.ApplyNormalMap(new NormalMap(e));
+            RefreshAll();
+        }
+
+        private void HandleLoadedSurfaceFileChanged(object? sender, string e)
+        {
+            _shapeManager.RemoveAll();
+            _visualizer.ClearArea();
+
+            _shapeParser.LoadObj(e);
+            _shapeManager.ScaleSurface((int)(_visualizer.CanvasSize.Width * 0.98 / 2));
+            _shapeManager.MoveSurface(new(_visualizer.CanvasSize.Width / 2, _visualizer.CanvasSize.Height / 2, 0));
+
+            _fillingService.FreeEagerlyLoadedData();
+            _fillingService.EagerLoadFillingAlgorithm();
+
+            _visualizer.InitDefaultState();
             RefreshAll();
         }
         #endregion
