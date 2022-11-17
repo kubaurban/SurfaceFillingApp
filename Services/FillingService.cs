@@ -115,7 +115,7 @@ namespace Services
         }
 
         #region NormalMap
-        public void ApplyNormalMap(NormalMap map)
+        public void ApplyNormalMap(NormalMapModifier map)
         {
             for (int x = 0; x < _visualizer.CanvasSize.Width; x++)
             {
@@ -267,7 +267,7 @@ namespace Services
 
         private Vector3 L(Vertex v) => Vector3.Normalize(new(LightPosition.X - v.X, LightPosition.Y - v.Y, LightPosition.Z - v.Z));
 
-        private Vector3 ComputeEffectiveNormalVector(int x, int y, Vector3 N_surf, NormalMap map)
+        private Vector3 ComputeEffectiveNormalVector(int x, int y, Vector3 N_surf, NormalMapModifier map)
         {
             var B = Vector3.Normalize(Vector3.Cross(N_surf, new(0, 0, 1)));
             if (N_surf.X < 1e-6 && N_surf.Y < 1e-6 && Math.Abs(N_surf.Z - 1) < 1e-6)

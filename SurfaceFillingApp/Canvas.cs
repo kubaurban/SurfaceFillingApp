@@ -109,7 +109,7 @@ namespace SurfaceFillingApp
 
         private void HandleNormalMapChanged(object? sender, string e)
         {
-            _fillingService.ApplyNormalMap(new NormalMap(e));
+            _fillingService.ApplyNormalMap(new NormalMapModifier(e));
             RefreshAll();
         }
 

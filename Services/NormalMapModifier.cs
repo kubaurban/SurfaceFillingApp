@@ -4,11 +4,11 @@ using System.Numerics;
 
 namespace Services
 {
-    public class NormalMap
+    public class NormalMapModifier
     {
         private readonly Bitmap _normalMap;
 
-        public NormalMap(string path) => _normalMap = new Bitmap(path);
+        public NormalMapModifier(string path) => _normalMap = new Bitmap(path);
 
         public Vector3 GetPixelColorVector(int x, int y)
         {

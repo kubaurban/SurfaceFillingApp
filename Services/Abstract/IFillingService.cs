@@ -7,7 +7,7 @@
         void EagerLoadFillingAlgorithm();
         void FreeEagerlyLoadedData();
         void FillSurface();
-        void ApplyNormalMap(NormalMap map);
+        void ApplyNormalMap(NormalMapModifier map);
         void DisableNormalMap();
     }
 }
